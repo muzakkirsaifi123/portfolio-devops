@@ -76,13 +76,12 @@ export default function SectionPage({section}) {
   }
 
   const goHome = () => {
-    // pushState removes hash without full reload; dispatch event so App.js re-renders
-    history.pushState("", "", window.location.pathname + window.location.search);
+    window.history.pushState("", "", window.location.pathname + window.location.search);
     window.dispatchEvent(new Event("hashchange"));
   };
 
   const goSection = sectionId => {
-    history.pushState("", "", `${window.location.pathname}${window.location.search}#/${sectionId}`);
+    window.history.pushState("", "", `${window.location.pathname}${window.location.search}#/${sectionId}`);
     window.dispatchEvent(new Event("hashchange"));
   };
 

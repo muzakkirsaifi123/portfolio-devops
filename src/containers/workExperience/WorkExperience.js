@@ -13,34 +13,41 @@ function TimelineCard({card, isDark, index}) {
       className={`timeline-item ${isEven ? "timeline-item--left" : "timeline-item--right"}`}
     >
       <div className="timeline-dot">
-        <img
-          src={card.companylogo}
-          alt={card.company}
-          className="timeline-logo"
-        />
+        <img src={card.companylogo} alt={card.company} className="timeline-logo" />
       </div>
-      <div className={isDark ? "timeline-card timeline-card--dark" : "timeline-card"}>
-        <div className="timeline-card-header">
-          <div className="timeline-card-header-info">
-            <h3 className="timeline-role">{card.role}</h3>
-            <h4 className="timeline-company">{card.company}</h4>
+
+      {/* flip wrapper */}
+      <div className="flip-card">
+        <div className="flip-card-inner">
+
+          {/* FRONT — logo + role + date */}
+          <div className={isDark ? "flip-card-front flip-card-front--dark" : "flip-card-front"}>
+            <div className="flip-front-logo">
+              <img src={card.companylogo} alt={card.company} className="flip-company-logo" />
+            </div>
+            <h3 className="flip-role">{card.role}</h3>
+            <h4 className="flip-company">{card.company}</h4>
+            <span className="flip-date">{card.date}</span>
+            <span className="flip-hint">Hover to see details</span>
           </div>
-          <span className="timeline-date">{card.date}</span>
+
+          {/* BACK — full description */}
+          <div className={isDark ? "flip-card-back flip-card-back--dark" : "flip-card-back"}>
+            <h3 className="flip-back-role">{card.role}</h3>
+            <h4 className="flip-back-company">{card.company}</h4>
+            {card.desc && (
+              <p className="flip-back-desc">{card.desc}</p>
+            )}
+            {card.descBullets && card.descBullets.length > 0 && (
+              <ul className="flip-back-bullets">
+                {card.descBullets.map((b, i) => (
+                  <li key={i}>{b}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+
         </div>
-        {card.desc && (
-          <p className={isDark ? "timeline-desc dark-mode-text" : "timeline-desc subTitle"}>
-            {card.desc}
-          </p>
-        )}
-        {card.descBullets && card.descBullets.length > 0 && (
-          <ul className="timeline-bullets">
-            {card.descBullets.map((bullet, i) => (
-              <li key={i} className={isDark ? "dark-mode-text" : "subTitle"}>
-                {bullet}
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
     </div>
   );

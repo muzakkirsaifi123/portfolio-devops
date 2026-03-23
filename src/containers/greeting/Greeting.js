@@ -11,7 +11,7 @@ import {illustration, greeting} from "../../portfolio";
 import StyleContext from "../../contexts/StyleContext";
 
 // Define titles outside the component
-const titles = ["DevOps Engineer. .", "Cloud Engineer. .", "Blogger. ."];
+const titles = ["Senior DevOps Engineer", "Senior Cloud Engineer", "DevSecOps Engineer"];
 
 const stats = [
   {value: "4+", label: "Years Experience"},

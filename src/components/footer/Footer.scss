@@ -1,5 +1,16 @@
 @import "../../_globalColor";
 
+.footer-text {
+  text-align: center;
+  color: $subTitle !important;
+}
+
+.footer-div {
+  margin-top: 2rem;
+  padding-bottom: 1rem;
+}
+
+/* kept for SectionPage contact use if needed */
 .contact-section {
   width: 90%;
   margin: 0 auto;

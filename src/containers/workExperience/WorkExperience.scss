@@ -104,124 +104,160 @@
   border-radius: 50%;
 }
 
-/* ── Card ─────────────────────────────────────────────────── */
-.timeline-card {
-  background: $lightBackground2;
-  border: 1px solid $lightBorder1;
-  border-radius: 14px;
-  padding: 1.4rem 1.6rem;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-  position: relative;
-  transition: transform 0.32s cubic-bezier(0.34, 1.4, 0.64, 1),
-    box-shadow 0.32s ease;
+/* ── Flip card wrapper ────────────────────────────────────── */
+.flip-card {
+  width: 100%;
+  perspective: 1200px;
+  min-height: 220px;
 }
 
-.timeline-card--dark {
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  min-height: 220px;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.34, 1.1, 0.64, 1);
+}
+
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+/* ── Front face ─────────────────────────────────────────── */
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 14px;
+  padding: 1.4rem 1.6rem;
+}
+
+.flip-card-front {
+  background: $lightBackground2;
+  border: 1px solid $lightBorder1;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.4rem;
+}
+
+.flip-card-front--dark {
   background: lighten(#171c28, 4%);
   border-color: rgba(255, 255, 255, 0.08);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
 }
 
-.timeline-card:hover,
-.timeline-card--dark:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 40px rgba(85, 25, 139, 0.18);
-}
-
-/* Connector nub toward center line */
-.timeline-item--left .timeline-card::after {
-  content: "";
-  position: absolute;
-  top: 26px;
-  right: -10px;
-  width: 0;
-  height: 0;
-  border-top: 9px solid transparent;
-  border-bottom: 9px solid transparent;
-  border-left: 10px solid $lightBorder1;
-}
-
-.timeline-item--right .timeline-card::after {
-  content: "";
-  position: absolute;
-  top: 26px;
-  left: -10px;
-  width: 0;
-  height: 0;
-  border-top: 9px solid transparent;
-  border-bottom: 9px solid transparent;
-  border-right: 10px solid $lightBorder1;
-}
-
-/* ── Card content ─────────────────────────────────────────── */
-.timeline-card-header {
+.flip-front-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: $lightBackground3;
+  border: 2px solid rgba(85, 25, 139, 0.2);
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.8rem;
-  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 0.4rem;
+  box-shadow: 0 0 0 6px rgba(85, 25, 139, 0.08);
 }
 
-.timeline-item--left .timeline-card-header {
-  flex-direction: row-reverse;
+.flip-company-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 50%;
 }
 
-.timeline-card-header-info {
-  flex: 1;
-}
-
-.timeline-role {
-  font-size: 1.05rem;
+.flip-role {
+  font-size: 1rem;
   font-weight: 700;
   color: $textColor;
-  margin: 0 0 2px;
+  margin: 0;
 }
 
-.dark-mode-text.timeline-role,
-.timeline-card--dark .timeline-role {
+.flip-card-front--dark .flip-role {
   color: $textColorDark;
 }
 
-.timeline-company {
-  font-size: 0.88rem;
+.flip-company {
+  font-size: 0.85rem;
   font-weight: 600;
   color: $buttonColor;
   margin: 0;
 }
 
-.timeline-date {
-  font-size: 0.78rem;
+.flip-date {
+  font-size: 0.75rem;
   font-weight: 600;
   color: $subTitle;
-  white-space: nowrap;
   background: rgba(85, 25, 139, 0.08);
   padding: 3px 10px;
   border-radius: 20px;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
-.timeline-desc {
-  font-size: 0.9rem;
+.flip-hint {
+  font-size: 0.68rem;
+  color: $subTitle;
+  margin-top: 8px;
+  opacity: 0.7;
+  letter-spacing: 0.04em;
+  animation: hintPulse 2s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+
+/* ── Back face ──────────────────────────────────────────── */
+.flip-card-back {
+  background: linear-gradient(135deg, $buttonColor, $buttonHover);
+  transform: rotateY(180deg);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.flip-card-back--dark {
+  background: linear-gradient(135deg, darken(#55198b, 5%), #4a2080);
+}
+
+.flip-back-role {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.flip-back-company {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 0.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 0.4rem;
+}
+
+.flip-back-desc {
+  font-size: 0.82rem;
   line-height: 1.6;
-  margin: 0.5rem 0 0.8rem;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0;
 }
 
-.timeline-item--left .timeline-desc {
-  text-align: right;
-}
-
-.timeline-bullets {
-  margin: 0.5rem 0 0;
-  padding-left: 1.2rem;
-  font-size: 0.88rem;
-  line-height: 1.7;
-}
-
-.timeline-item--left .timeline-bullets {
-  padding-left: 0;
-  padding-right: 1.2rem;
-  list-style-position: inside;
+.flip-back-bullets {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.88);
 }
 
 /* ── Media Queries ────────────────────────────────────────── */
@@ -232,7 +268,6 @@
 }
 
 @media (max-width: 900px) {
-  /* Switch to single-column left-aligned timeline */
   .timeline-line {
     left: 26px;
   }
@@ -244,32 +279,15 @@
     margin-bottom: 2rem;
   }
 
-  .timeline-item--left .timeline-card::after,
-  .timeline-item--right .timeline-card::after {
-    left: -10px;
-    right: auto;
-    border-right: 10px solid $lightBorder1;
-    border-left: none;
-  }
-
   .timeline-item--left .timeline-dot,
   .timeline-item--right .timeline-dot {
     left: -50px;
     right: auto;
   }
 
-  .timeline-item--left .timeline-card-header {
-    flex-direction: row;
-  }
-
-  .timeline-item--left .timeline-desc {
-    text-align: left;
-  }
-
-  .timeline-item--left .timeline-bullets {
-    padding-left: 1.2rem;
-    padding-right: 0;
-    list-style-position: outside;
+  .flip-card,
+  .flip-card-inner {
+    min-height: 200px;
   }
 }
 

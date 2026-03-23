@@ -160,6 +160,10 @@ const skillsSection = {
     {
       skillName: "Terraform CDK",
       fontAwesomeClassname: "devicon-terraform-original colored"
+    },
+    {
+      skillName: "DevSecOps",
+      fontAwesomeClassname: "fas fa-shield-alt"
     }
   ],
   display: true // Set false to hide this section, defaults to true
