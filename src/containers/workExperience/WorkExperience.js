@@ -28,7 +28,6 @@ function TimelineCard({card, isDark, index}) {
             <h3 className="flip-role">{card.role}</h3>
             <h4 className="flip-company">{card.company}</h4>
             <span className="flip-date">{card.date}</span>
-            <span className="flip-hint">Hover to see details</span>
           </div>
 
           {/* BACK — full description */}

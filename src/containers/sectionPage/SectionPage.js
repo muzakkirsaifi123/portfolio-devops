@@ -99,15 +99,11 @@ export default function SectionPage({section}) {
       <StyleProvider value={{isDark, changeTheme: () => setIsDark(!isDark)}}>
         {/* ── Top bar ── */}
         <header className={isDark ? "dark-menu sp-topbar" : "sp-topbar"}>
-          <button className="sp-back-btn" onClick={goHome}>
-            ← Home
+          <button className="sp-back-btn" onClick={goHome} title="Go Home">
+            <span className="sp-back-bracket">&lt;</span>
+            <span className="sp-back-name">{greeting.username}</span>
+            <span className="sp-back-bracket">/&gt;</span>
           </button>
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-          <a className="sp-logo">
-            <span className="grey-color">&lt;</span>
-            <span className="sp-logo-name">{greeting.username}</span>
-            <span className="grey-color">/&gt;</span>
-          </a>
           <nav className="sp-nav">
             {NAV_ITEMS.map(item => (
               <button

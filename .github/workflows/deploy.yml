@@ -51,3 +51,15 @@ jobs:
           publish_branch: gh-pages
           # Keep CNAME file if you have a custom domain configured
           # cname: yourdomain.com
+
+      # 6. Print the live site URL
+      - name: Site URL
+        run: |
+          REPO="${{ github.repository }}"
+          OWNER=$(echo "$REPO" | cut -d'/' -f1 | tr '[:upper:]' '[:lower:]')
+          REPO_NAME=$(echo "$REPO" | cut -d'/' -f2)
+          echo ""
+          echo "============================================"
+          echo "  Site deployed successfully!"
+          echo "  URL: https://${OWNER}.github.io/${REPO_NAME}/"
+          echo "============================================"

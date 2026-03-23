@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import "./App.scss";
 import Main from "./containers/Main";
 import Admin from "./containers/admin/Admin";
+import OwnAdmin from "./containers/ownadmin/OwnAdmin";
 import SectionPage from "./containers/sectionPage/SectionPage";
 
 function getSection(hash) {
@@ -11,7 +12,10 @@ function getSection(hash) {
 }
 
 function App() {
-  const isAdmin = new URLSearchParams(window.location.search).has("admin");
+  const path = window.location.pathname;
+  const search = new URLSearchParams(window.location.search);
+  const isAdmin = path === "/admin" || path.endsWith("/admin") || search.has("admin");
+  const isOwnAdmin = path === "/ownadmin" || path.endsWith("/ownadmin") || search.has("ownadmin");
   const [hash, setHash] = useState(window.location.hash);
 
   useEffect(() => {
@@ -21,6 +25,7 @@ function App() {
   }, []);
 
   if (isAdmin) return <Admin />;
+  if (isOwnAdmin) return <OwnAdmin />;
 
   const section = getSection(hash);
   if (section) return <SectionPage section={section} />;

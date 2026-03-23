@@ -201,63 +201,57 @@
   margin-top: 4px;
 }
 
-.flip-hint {
-  font-size: 0.68rem;
-  color: $subTitle;
-  margin-top: 8px;
-  opacity: 0.7;
-  letter-spacing: 0.04em;
-  animation: hintPulse 2s ease-in-out infinite;
-}
-
-@keyframes hintPulse {
-  0%, 100% { opacity: 0.5; }
-  50%       { opacity: 1; }
-}
 
 /* ── Back face ──────────────────────────────────────────── */
 .flip-card-back {
-  background: linear-gradient(135deg, $buttonColor, $buttonHover);
+  background: #1a1a2e;
+  border: 1px solid rgba(140, 67, 206, 0.25);
   transform: rotateY(180deg);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  padding: 1.4rem 1.6rem 1.4rem 1.8rem;
 }
 
 .flip-card-back--dark {
-  background: linear-gradient(135deg, darken(#55198b, 5%), #4a2080);
+  background: #12111e;
+  border-color: rgba(140, 67, 206, 0.3);
 }
 
 .flip-back-role {
   font-size: 1rem;
   font-weight: 700;
-  color: #fff;
+  color: #c084fc;
   margin: 0;
 }
 
 .flip-back-company {
   font-size: 0.82rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(200, 196, 255, 0.75);
   margin: 0 0 0.4rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(140, 67, 206, 0.2);
   padding-bottom: 0.4rem;
 }
 
 .flip-back-desc {
   font-size: 0.82rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.65;
+  color: rgba(226, 232, 240, 0.85);
   margin: 0;
 }
 
 .flip-back-bullets {
   margin: 0;
-  padding-left: 1.1rem;
-  font-size: 0.8rem;
-  line-height: 1.65;
-  color: rgba(255, 255, 255, 0.88);
+  padding-left: 1.2rem;
+  font-size: 0.79rem;
+  line-height: 1.7;
+  color: rgba(226, 232, 240, 0.8);
+}
+
+.flip-back-bullets li {
+  margin-bottom: 0.2rem;
 }
 
 /* ── Media Queries ────────────────────────────────────────── */

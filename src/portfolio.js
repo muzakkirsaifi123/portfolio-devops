@@ -494,6 +494,66 @@ const twitterDetails = {
 
 const isHireable = false; // Set false if you are not looking for a job. Also isHireable will be display as Open for opportunities: Yes/No in the GitHub footer
 
+// ── OwnAdmin live overrides ────────────────────────────────────────────────
+// If the user has saved edits via the /ownadmin page, apply them now so the
+// running site reflects those changes without needing a file change.
+try {
+  const raw = localStorage.getItem("ownadmin_overrides");
+  if (raw) {
+    const ov = JSON.parse(raw);
+    if (ov.greeting)          Object.assign(greeting, ov.greeting);
+    if (ov.socialMediaLinks)  Object.assign(socialMediaLinks, ov.socialMediaLinks);
+    if (ov.contactInfo)       Object.assign(contactInfo, ov.contactInfo);
+    if (ov.skillsSection)     Object.assign(skillsSection, ov.skillsSection);
+    if (ov.techStack)         Object.assign(techStack, ov.techStack);
+    if (ov.workExperiences) {
+      // Merge text fields only; preserve image requires from original
+      ov.workExperiences.experience.forEach((e, i) => {
+        if (workExperiences.experience[i]) {
+          const {companylogo, ...rest} = e; // keep original logo
+          Object.assign(workExperiences.experience[i], rest);
+        }
+      });
+    }
+    if (ov.educationInfo) {
+      ov.educationInfo.schools.forEach((s, i) => {
+        if (educationInfo.schools[i]) {
+          const {logo, ...rest} = s;
+          Object.assign(educationInfo.schools[i], rest);
+        }
+      });
+    }
+    if (ov.achievementSection) {
+      if (ov.achievementSection.title)    achievementSection.title    = ov.achievementSection.title;
+      if (ov.achievementSection.subtitle) achievementSection.subtitle = ov.achievementSection.subtitle;
+      if (ov.achievementSection.achievementsCards) {
+        ov.achievementSection.achievementsCards.forEach((c, i) => {
+          if (achievementSection.achievementsCards[i]) {
+            const {image, ...rest} = c;
+            Object.assign(achievementSection.achievementsCards[i], rest);
+          }
+        });
+      }
+    }
+    if (ov.blogSection) {
+      if (ov.blogSection.subtitle) blogSection.subtitle = ov.blogSection.subtitle;
+      if (ov.blogSection.blogs)    blogSection.blogs    = ov.blogSection.blogs;
+    }
+    if (ov.bigProjects) {
+      if (ov.bigProjects.projects) {
+        ov.bigProjects.projects.forEach((p, i) => {
+          if (bigProjects.projects[i]) {
+            const {image, ...rest} = p;
+            Object.assign(bigProjects.projects[i], rest);
+          }
+        });
+      }
+    }
+  }
+} catch (e) {
+  // silently ignore – don't break the site if localStorage is corrupt
+}
+
 export {
   illustration,
   greeting,
