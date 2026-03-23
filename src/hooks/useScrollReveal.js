@@ -1,44 +1,37 @@
 import {useEffect} from "react";
 
-function observeRevealElements() {
-  const elements = document.querySelectorAll("[data-reveal]:not(.revealed)");
-  if (!elements.length) return () => {};
-
-  const observer = new IntersectionObserver(
-    entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("revealed");
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    // rootMargin pushes the trigger point: elements must be 8% inside the viewport
-    {threshold: 0.08, rootMargin: "0px 0px -8% 0px"}
-  );
-
-  elements.forEach(el => observer.observe(el));
-  return () => observer.disconnect();
-}
-
 /**
- * Watches all [data-reveal] elements via IntersectionObserver.
- * Re-scans after 200ms to catch elements rendered in child effects.
+ * Scroll-event based reveal — more reliable than IntersectionObserver
+ * on React 16 + webpack 4 setups.
+ *
+ * Adds class "revealed" to every [data-reveal] element whose top edge
+ * has scrolled into the top 92% of the viewport.
  */
 export default function useScrollReveal() {
   useEffect(() => {
-    // Immediate scan (catches elements already in DOM after first render)
-    let cleanup1 = observeRevealElements();
+    function revealVisible() {
+      const vh = window.innerHeight;
+      const pending = document.querySelectorAll("[data-reveal]:not(.revealed)");
+      pending.forEach(el => {
+        const top = el.getBoundingClientRect().top;
+        if (top < vh * 0.92) {
+          el.classList.add("revealed");
+        }
+      });
+    }
 
-    // Delayed re-scan (catches elements rendered by child useEffects / Lottie)
-    const timer = setTimeout(() => {
-      cleanup1();
-      cleanup1 = observeRevealElements();
-    }, 250);
+    // Run immediately (reveals anything already on screen)
+    revealVisible();
+    // Run again after a short delay so Lottie / lazy content is in DOM
+    const t = setTimeout(revealVisible, 300);
+
+    window.addEventListener("scroll", revealVisible, {passive: true});
+    window.addEventListener("resize", revealVisible, {passive: true});
 
     return () => {
-      clearTimeout(timer);
-      cleanup1();
+      clearTimeout(t);
+      window.removeEventListener("scroll", revealVisible);
+      window.removeEventListener("resize", revealVisible);
     };
   }, []);
 }

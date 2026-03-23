@@ -92,6 +92,5 @@ export default function StartupProject() {
           </div>
         </div>
       </div>
-    </div>
   );
 }

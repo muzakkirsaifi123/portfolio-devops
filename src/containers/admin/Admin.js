@@ -3,9 +3,7 @@ import "./Admin.scss";
 import {
   greeting,
   socialMediaLinks,
-  skillsSection,
-  techStack,
-  contactInfo
+  skillsSection
 } from "../../portfolio";
 
 /* ─── helpers ────────────────────────────────────────────────── */
@@ -349,7 +347,7 @@ export default function Admin() {
             <a
               href="https://devicon.dev"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
             >
               devicon.dev
             </a>{" "}
@@ -357,7 +355,7 @@ export default function Admin() {
             <a
               href="https://fontawesome.com/icons"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
             >
               fontawesome.com/icons
             </a>

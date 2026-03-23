@@ -62,9 +62,56 @@
   color: $buttonColor;
 }
 
+.sp-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+
+.sp-nav-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: $textColor;
+  padding: 7px 14px;
+  border-radius: 6px;
+  transition: color 0.2s ease, background 0.2s ease;
+  white-space: nowrap;
+}
+
+.dark-menu .sp-nav-link {
+  color: $textColorDark;
+}
+
+.sp-nav-link:hover {
+  color: $buttonColor;
+  background: rgba(85, 25, 139, 0.08);
+}
+
+.sp-nav-link--active {
+  color: $buttonColor;
+  font-weight: 700;
+  background: rgba(85, 25, 139, 0.1);
+}
+
+.dark-menu .sp-nav-link--active {
+  color: $buttonHover;
+  background: rgba(140, 67, 206, 0.15);
+}
+
 .sp-toggle {
   display: flex;
   align-items: center;
+}
+
+@media (max-width: 900px) {
+  .sp-nav {
+    display: none;
+  }
 }
 
 /* ── Hero section ─────────────────────────────────────────── */
@@ -88,6 +135,12 @@
 .sp-hero-lottie {
   width: 220px;
   height: 220px;
+  animation: spFloat 4s ease-in-out infinite;
+}
+
+@keyframes spFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-14px); }
 }
 
 .sp-hero-text {

@@ -1,29 +1,89 @@
 @import "../_globalColor";
 
+/* ── Header spacer (inside dark/light wrapper so bg matches page) ── */
+.header-spacer {
+  height: 78px;
+  flex-shrink: 0;
+}
+
+/* ── Achievement / education reveal wrappers fill the grid cell ── */
+.achievement-cards-div > [data-reveal] {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ── Keyframes for moving animations ──────────────────────── */
+@keyframes revealLeft {
+  0%   { opacity: 0; transform: translateX(-90px) scale(0.96); filter: blur(4px); }
+  60%  { opacity: 1; transform: translateX(6px) scale(1.01); filter: blur(0); }
+  100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+}
+
+@keyframes revealRight {
+  0%   { opacity: 0; transform: translateX(90px) scale(0.96); filter: blur(4px); }
+  60%  { opacity: 1; transform: translateX(-6px) scale(1.01); filter: blur(0); }
+  100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+}
+
+@keyframes revealUp {
+  0%   { opacity: 0; transform: translateY(70px) scale(0.95); filter: blur(4px); }
+  60%  { opacity: 1; transform: translateY(-5px) scale(1.01); filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes revealZoom {
+  0%   { opacity: 0; transform: scale(0.78) translateY(28px); filter: blur(6px); }
+  65%  { opacity: 1; transform: scale(1.03) translateY(-4px); filter: blur(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
 /* ── Scroll reveal (Tesla-style) ───────────────────────────── */
 [data-reveal] {
   opacity: 0;
-  /* Long ease-out for a smooth "slide in from afar" feel */
-  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.85s ease;
+  filter: blur(4px);
 }
 
 [data-reveal="left"] {
-  transform: translateX(-64px);
+  transform: translateX(-90px) scale(0.96);
 }
 [data-reveal="right"] {
-  transform: translateX(64px);
+  transform: translateX(90px) scale(0.96);
 }
 [data-reveal="up"] {
-  transform: translateY(50px);
+  transform: translateY(70px) scale(0.95);
 }
 [data-reveal="zoom"] {
-  transform: scale(0.85) translateY(20px);
+  transform: scale(0.78) translateY(28px);
 }
 
+/* When revealed — play keyframe animation instead of plain transition */
+[data-reveal="left"].revealed {
+  animation: revealLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+[data-reveal="right"].revealed {
+  animation: revealRight 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+[data-reveal="up"].revealed {
+  animation: revealUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+[data-reveal="zoom"].revealed {
+  animation: revealZoom 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* After animation settles, remove the filter so it's clean */
 [data-reveal].revealed {
   opacity: 1;
   transform: none;
+  filter: none;
 }
 
 /* Respect reduced-motion preference */

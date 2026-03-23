@@ -39,6 +39,7 @@ jobs:
           REACT_APP_ADMIN_PASSWORD: ${{ secrets.REACT_APP_ADMIN_PASSWORD }}
           # Suppress CI=true strict mode so warnings don't fail the build
           CI: false
+          NODE_OPTIONS: --openssl-legacy-provider
         run: npm run build
 
       # 5. Deploy the build/ folder to the gh-pages branch

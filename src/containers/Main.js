@@ -74,6 +74,7 @@ const Main = () => {
               style={{width: `${scrollProgress}%`}}
             />
             <Header />
+            <div className="header-spacer" aria-hidden="true" />
             <Greeting />
             <Skills />
             <StackProgress />

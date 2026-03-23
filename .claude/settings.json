@@ -1,5 +1,11 @@
 {
   "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(grep -v \"^$\")",
+      "WebFetch(domain:lottiefiles.com)",
+      "WebFetch(domain:lottie.host)"
+    ],
     "additionalDirectories": [
       "/tmp"
     ]

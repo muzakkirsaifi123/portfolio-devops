@@ -1,5 +1,4 @@
-import React, {useContext, useEffect, useState, useCallback} from "react";
-import Headroom from "react-headroom";
+import React, {useContext, useEffect, useState, useCallback, useRef} from "react";
 import "./Header.scss";
 import ToggleSwitch from "../ToggleSwitch/ToggleSwitch";
 import StyleContext from "../../contexts/StyleContext";
@@ -39,6 +38,7 @@ function Header() {
   const viewTalks = talkSection.display;
   const [activeSection, setActiveSection] = useState("");
   const [transition, setTransition] = useState(null); // {label, lottie, href}
+  const pendingSectionRef = useRef(null);
 
   useEffect(() => {
     const sectionIds = ["greeting", "skills", "experience", "projects", "achievements", "blogs", "talks", "contact"];
@@ -62,6 +62,7 @@ function Header() {
     e.preventDefault();
     const info = SECTION_LOTTIE[sectionId];
     if (!info) return;
+    pendingSectionRef.current = sectionId;
     setTransition({...info, sectionId});
     // close mobile menu
     const btn = document.getElementById("menu-btn");
@@ -69,10 +70,11 @@ function Header() {
   }, []);
 
   const handleTransitionDone = useCallback(() => {
-    const sectionId = transition?.sectionId;
+    const sectionId = pendingSectionRef.current;
+    pendingSectionRef.current = null;
     setTransition(null);
     if (sectionId) window.location.hash = `#/${sectionId}`;
-  }, [transition]);
+  }, []); // stable — no deps needed
 
   const navLink = (href, label, sectionId) => (
     <a
@@ -89,7 +91,7 @@ function Header() {
       {transition && (
         <NavTransition section={transition} onDone={handleTransitionDone} />
       )}
-      <Headroom>
+      <div className="header-sticky">
         <header className={isDark ? "dark-menu header" : "header"}>
           <a href="/" className="logo">
             <span className="grey-color"> &lt;</span>
@@ -132,7 +134,7 @@ function Header() {
             </li>
           </ul>
         </header>
-      </Headroom>
+      </div>
     </>
   );
 }

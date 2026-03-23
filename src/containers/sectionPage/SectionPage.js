@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import "./SectionPage.scss";
 import {useLocalStorage} from "../../hooks/useLocalStorage";
+import useScrollReveal from "../../hooks/useScrollReveal";
 import {StyleProvider} from "../../contexts/StyleContext";
 import DisplayLottie from "../../components/displayLottie/DisplayLottie";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
@@ -61,6 +62,7 @@ export default function SectionPage({section}) {
   const darkPref = window.matchMedia("(prefers-color-scheme: dark)");
   const [isDark, setIsDark] = useLocalStorage("isDark", darkPref.matches);
   const [visible, setVisible] = useState(false);
+  useScrollReveal();
 
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 30);
@@ -74,8 +76,24 @@ export default function SectionPage({section}) {
   }
 
   const goHome = () => {
-    window.location.hash = "";
+    // pushState removes hash without full reload; dispatch event so App.js re-renders
+    history.pushState("", "", window.location.pathname + window.location.search);
+    window.dispatchEvent(new Event("hashchange"));
   };
+
+  const goSection = sectionId => {
+    history.pushState("", "", `${window.location.pathname}${window.location.search}#/${sectionId}`);
+    window.dispatchEvent(new Event("hashchange"));
+  };
+
+  const NAV_ITEMS = [
+    {id: "skills", label: "Skills"},
+    {id: "experience", label: "Experience"},
+    {id: "projects", label: "Projects"},
+    {id: "achievements", label: "Achievements"},
+    {id: "blogs", label: "Blogs"},
+    {id: "contact", label: "Contact"}
+  ];
 
   return (
     <div className={isDark ? "dark-mode section-page" : "section-page"}>
@@ -85,11 +103,23 @@ export default function SectionPage({section}) {
           <button className="sp-back-btn" onClick={goHome}>
             ← Home
           </button>
+          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <a className="sp-logo">
             <span className="grey-color">&lt;</span>
             <span className="sp-logo-name">{greeting.username}</span>
             <span className="grey-color">/&gt;</span>
           </a>
+          <nav className="sp-nav">
+            {NAV_ITEMS.map(item => (
+              <button
+                key={item.id}
+                className={`sp-nav-link${section === item.id ? " sp-nav-link--active" : ""}`}
+                onClick={() => goSection(item.id)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
           <div className="sp-toggle">
             <ToggleSwitch />
           </div>

@@ -61,6 +61,11 @@
 }
 
 /* ── Logo dot on the center line ──────────────────────────── */
+@keyframes dotPulse {
+  0%, 100% { box-shadow: 0 0 0 5px rgba(85, 25, 139, 0.12); }
+  50%       { box-shadow: 0 0 0 10px rgba(85, 25, 139, 0.22), 0 0 20px rgba(85, 25, 139, 0.15); }
+}
+
 .timeline-dot {
   position: absolute;
   top: 20px;
@@ -76,6 +81,7 @@
   z-index: 2;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: dotPulse 3s ease-in-out infinite;
 }
 
 .timeline-item--left .timeline-dot {
