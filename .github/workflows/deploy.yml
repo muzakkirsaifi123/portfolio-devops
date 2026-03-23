@@ -4,64 +4,45 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # allow manual trigger from GitHub UI
+  workflow_dispatch:
 
-# Required for GitHub Pages with "GitHub Actions" source
 permissions:
-  contents: read
+  contents: write   # needed by gh-pages to push the built files
   pages: write
   id-token: write
 
-# Only one deployment at a time; cancel in-progress if a new push arrives
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout source
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # 2. Set up Node.js
-      - name: Set up Node.js
+      - name: Set up Node 18
         uses: actions/setup-node@v4
         with:
           node-version: "18"
           cache: "npm"
 
-      # 3. Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # 4. Build React app
-      - name: Build React app
+      - name: Build
         env:
-          REACT_APP_GITHUB_TOKEN: ${{ secrets.REACT_APP_GITHUB_TOKEN }}
-          GITHUB_USERNAME: ${{ secrets.GH_USERNAME }}
-          USE_GITHUB_DATA: ${{ secrets.USE_GITHUB_DATA }}
-          REACT_APP_ADMIN_PASSWORD: ${{ secrets.REACT_APP_ADMIN_PASSWORD }}
           CI: false
           NODE_OPTIONS: --openssl-legacy-provider
+          REACT_APP_GITHUB_TOKEN: ${{ secrets.REACT_APP_GITHUB_TOKEN }}
+          REACT_APP_ADMIN_PASSWORD: ${{ secrets.REACT_APP_ADMIN_PASSWORD }}
         run: npm run build
 
-      # 5. Configure GitHub Pages
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      # 6. Upload build output as Pages artifact
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: "./build"
-
-      # 7. Deploy — the live URL is printed in the Actions summary automatically
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+          publish_branch: gh-pages
