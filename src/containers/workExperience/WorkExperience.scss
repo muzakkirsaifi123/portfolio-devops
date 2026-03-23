@@ -1,10 +1,12 @@
 @import "../../_globalColor";
 
-/* ── Heading ──────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   HEADING
+   ═══════════════════════════════════════════════════════════ */
 .experience-heading {
   font-size: 44px;
   font-weight: 400;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .experience-container {
@@ -14,441 +16,316 @@
   margin-top: 2rem;
 }
 
-/* ════════════════════════════════════════════════════════════
+
+/* ═══════════════════════════════════════════════════════════
    TRACK
-   ════════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════════════ */
 
-/* ── Keyframes ── */
-@keyframes rail-shimmer {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(400%); }
+/* Path draw-in animation */
+@keyframes expDraw {
+  to { stroke-dashoffset: 0; }
 }
 
-@keyframes rail-pulse {
-  0%, 100% { opacity: 0.25; }
-  50%       { opacity: 0.55; }
+.exp-track {
+  position: relative;
+  overflow: visible;
 }
 
-@keyframes ring-radar {
+/* Blur overlay when a node is hovered */
+.exp-overlay {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.dark-mode .exp-overlay {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BEACON NODE
+   ═══════════════════════════════════════════════════════════ */
+
+@keyframes radarRing {
   0%   { transform: scale(1);   opacity: 0.7; }
-  100% { transform: scale(2.8); opacity: 0;   }
+  100% { transform: scale(3.2); opacity: 0;   }
+}
+@keyframes beaconFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
 }
 
-@keyframes node-arrow-bounce {
-  0%, 100% { transform: translateY(0) scaleX(0.9); opacity: 0.5; }
-  50%       { transform: translateY(4px) scaleX(1); opacity: 1;   }
-}
-
-/* ── Track wrapper ── */
-.epc-track {
-  position: relative;
-  margin-bottom: 18px;
-  padding: 8px 0 0;
-}
-
-/* ── Rail line ── */
-.epc-track-rail {
+.exp-node {
   position: absolute;
-  top: 50%;
-  left: 7%;
-  right: 7%;
-  height: 2px;
-  transform: translateY(-50%);
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba($buttonColor, 0.4) 15%,
-    rgba($buttonHover, 0.5) 50%,
-    rgba($buttonColor, 0.4) 85%,
-    transparent 100%
-  );
-  animation: rail-pulse 3s ease-in-out infinite;
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-/* Traveling shimmer spark */
-.epc-track-rail-glow {
-  position: absolute;
-  top: -2px;
-  left: 0;
-  width: 20%;
-  height: 6px;
-  border-radius: 4px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.9),
-    transparent
-  );
-  filter: blur(2px);
-  animation: rail-shimmer 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* ── Node row ── */
-.epc-track-nodes {
-  display: grid;
-  grid-template-columns: repeat(var(--exp-cols, 4), 1fr);
-  gap: 20px;
-  position: relative;
-}
-
-/* ── Individual beacon node ── */
-.epc-node {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
   cursor: pointer;
+  z-index: 6;
   transition: opacity 0.3s ease, filter 0.3s ease;
 }
 
-.epc-node--dim {
+/* Dimmed state: other nodes when one is hovered */
+.exp-node--dimmed {
   opacity: 0.25;
   filter: blur(1px);
+  z-index: 4; /* below overlay */
 }
 
-/* ── Radar ring container ── */
-.epc-node-rings {
-  position: relative;
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
+/* Active state */
+.exp-node--active {
+  z-index: 20; /* above overlay */
+  .exp-logo {
+    border-color: $buttonHover;
+    transform: scale(1.22);
+    box-shadow:
+      0 0 0 8px rgba($buttonColor, 0.18),
+      0 0 30px rgba($buttonColor, 0.55);
+    animation: beaconFloat 2s ease-in-out infinite;
+  }
+  .exp-ring {
+    border-color: rgba($buttonHover, 0.7);
+    border-width: 2px;
+  }
 }
 
-/* Expanding radar rings */
-.epc-node-ring {
+/* Radar rings */
+.exp-ring {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 1.5px solid $buttonColor;
-  opacity: 0;
-  animation: ring-radar 2.8s ease-out infinite;
+  border: 1.5px solid rgba($buttonColor, 0.45);
+  animation: radarRing 3s ease-out infinite;
+  pointer-events: none;
 
-  &--1 { animation-delay: 0s; }
-  &--2 { animation-delay: 1.4s; }
+  &--1 { animation-delay: 0s;    }
+  &--2 { animation-delay: 1.5s;  }
 }
 
-/* Rings are subtle by default, vivid when active */
-.epc-node--active .epc-node-ring {
-  border-color: $buttonHover;
-  border-width: 2px;
-}
-
-/* ── Logo circle ── */
-.epc-node-logo {
+/* Logo circle */
+.exp-logo {
   position: absolute;
   inset: 0;
   border-radius: 50%;
   background: $lightBackground2;
-  border: 2px solid rgba($buttonColor, 0.3);
+  border: 2.5px solid rgba($buttonColor, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  box-shadow: 0 0 0 4px rgba($buttonColor, 0.08);
+  box-shadow:
+    0 0 0 5px rgba($buttonColor, 0.07),
+    0 6px 20px rgba(0,0,0,0.12);
   transition:
-    border-color  0.3s ease,
-    transform     0.3s cubic-bezier(0.34, 1.4, 0.64, 1),
-    box-shadow    0.3s ease;
+    border-color 0.3s ease,
+    transform    0.35s cubic-bezier(0.34, 1.4, 0.64, 1),
+    box-shadow   0.3s ease;
 
   img {
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
     object-fit: contain;
     border-radius: 50%;
   }
 }
 
-.dark-mode .epc-node-logo {
+.dark-mode .exp-logo {
   background: lighten(#171c28, 5%);
-  border-color: rgba($buttonColor, 0.4);
+  border-color: rgba($buttonColor, 0.45);
 }
 
-.epc-node--active .epc-node-logo {
-  border-color: $buttonHover;
-  transform: scale(1.18);
-  box-shadow:
-    0 0 0 6px rgba($buttonColor, 0.15),
-    0 0 24px rgba($buttonColor, 0.4);
-}
-
-/* ── Year label ── */
-.epc-node-year {
-  font-size: 0.67rem;
-  font-weight: 700;
-  color: $subTitle;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
-  transition: color 0.25s ease;
-}
-
-.epc-node--active .epc-node-year {
-  color: $buttonColor;
-}
-
-/* ── Down-arrow connector ── */
-.epc-node-arrow {
-  width: 10px;
-  height: 10px;
-  border-right: 2px solid rgba($buttonColor, 0.4);
-  border-bottom: 2px solid rgba($buttonColor, 0.4);
-  transform: rotate(45deg);
-  animation: node-arrow-bounce 1.5s ease-in-out infinite;
-  transition: border-color 0.3s;
-}
-
-.epc-node--active .epc-node-arrow {
-  border-color: $buttonHover;
-}
-
-.epc-node--dim .epc-node-arrow {
-  opacity: 0;
-}
-
-
-/* ════════════════════════════════════════════════════════════
-   CARDS
-   ════════════════════════════════════════════════════════════ */
-
-.epc-grid {
-  display: grid;
-  grid-template-columns: repeat(var(--exp-cols, 4), 1fr);
-  gap: 20px;
-}
-
-/* ── Glow pulse animation ── */
-@keyframes epc-glow-pulse {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50%       { opacity: 0.75; transform: scale(1.1); }
-}
-
-/* ── Card shell ── */
-.epc {
-  position: relative;
-  border-radius: 18px;
-  border: 1px solid $lightBorder1;
-  overflow: visible;
-  cursor: pointer;
-  transition:
-    transform     0.35s cubic-bezier(0.34, 1.2, 0.64, 1),
-    box-shadow    0.35s ease,
-    opacity       0.35s ease,
-    filter        0.35s ease,
-    border-color  0.35s ease;
-}
-
-/* ── Inner clip wrapper ── */
-.epc-inner {
-  border-radius: 18px;
-  overflow: hidden;
-  position: relative;
-  background: $lightBackground2;
-}
-
-.epc--dark .epc-inner {
-  background: lighten(#171c28, 3%);
-}
-
-/* ── Glow blob ── */
-.epc-glow {
+/* Date label */
+.exp-node-date {
   position: absolute;
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(106, 17, 203, 0.5), transparent 70%);
-  filter: blur(40px);
-  top: -30px;
-  right: -30px;
-  opacity: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: $subTitle;
+  background: rgba($buttonColor, 0.07);
+  border: 1px solid rgba($buttonColor, 0.15);
+  border-radius: 20px;
+  padding: 2px 8px;
+  transition: color 0.25s, background 0.25s;
   pointer-events: none;
-  transition: opacity 0.4s ease;
-  z-index: 0;
+
+  &--left  { top: calc(100% + 8px); }  /* below beacon for left nodes */
+  &--right { bottom: calc(100% + 8px); } /* above beacon for right nodes */
 }
 
-/* ── Active card ── */
-.epc--active {
-  transform: translateY(-10px) scale(1.03);
+.exp-node--active .exp-node-date {
+  color: $buttonColor;
+  background: rgba($buttonColor, 0.14);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   POPUP CARD
+   ═══════════════════════════════════════════════════════════ */
+
+@keyframes popupIn {
+  from { opacity: 0; transform: translateY(-50%) scale(0.9); }
+  to   { opacity: 1; transform: translateY(-50%) scale(1);   }
+}
+
+.exp-popup {
+  position: absolute;
+  border-radius: 20px;
+  padding: 26px 28px 22px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba($buttonColor, 0.22);
   box-shadow:
-    0 24px 60px rgba(106, 17, 203, 0.35),
-    0 0 0 1.5px rgba(140, 67, 206, 0.55),
-    inset 0 0 40px rgba(106, 17, 203, 0.06);
-  border-color: rgba(140, 67, 206, 0.5);
-  z-index: 10;
-
-  .epc-glow {
-    opacity: 1;
-    animation: epc-glow-pulse 2.5s ease-in-out infinite;
-  }
-
-  .epc-detail {
-    max-height: 500px;
-    opacity: 1;
-    padding-top: 12px;
-    padding-bottom: 20px;
-  }
-
-  .epc-chevron i { transform: rotate(180deg); color: $buttonColor; }
-  .epc-role      { color: $buttonColor; }
+    0 24px 64px rgba(0,0,0,0.18),
+    0 0 0 1px rgba($buttonColor, 0.1) inset;
+  z-index: 25;
+  pointer-events: auto;
+  animation: popupIn 0.22s cubic-bezier(0.34, 1.3, 0.64, 1) both;
 }
 
-/* ── Dimmed card ── */
-.epc--dimmed {
-  opacity: 0.45;
-  filter: blur(1.5px);
-  transform: scale(0.97);
+.exp-popup--dark {
+  background: rgba(16, 14, 28, 0.96);
+  border-color: rgba($buttonHover, 0.3);
+  box-shadow:
+    0 16px 48px rgba(0,0,0,0.5),
+    0 0 0 1px rgba($buttonColor, 0.12) inset;
 }
 
-/* ── Card header ── */
-.epc-header {
-  position: relative;
-  z-index: 1;
+/* Caret */
+.exp-popup-caret {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  border-radius: 2px;
+  rotate: 45deg;
+  transform: translateY(-50%);
+
+  &--left {
+    right: 100%;
+    margin-right: -6px;
+    border-left:   1px solid rgba($buttonColor, 0.22);
+    border-bottom: 1px solid rgba($buttonColor, 0.22);
+  }
+  &--right {
+    left: 100%;
+    margin-left: -6px;
+    border-right: 1px solid rgba($buttonColor, 0.22);
+    border-top:   1px solid rgba($buttonColor, 0.22);
+  }
+}
+
+.exp-popup-head {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 18px 20px;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
-.epc-logo-wrap {
-  flex-shrink: 0;
-  width: 52px;
-  height: 52px;
-  border-radius: 12px;
+.exp-popup-logo {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
   background: $lightBackground3;
-  border: 1px solid rgba(140, 67, 206, 0.2);
+  border: 1px solid rgba($buttonColor, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  box-shadow: 0 0 0 4px rgba(140, 67, 206, 0.08);
-  transition: border-color 0.3s, box-shadow 0.3s;
+  flex-shrink: 0;
 
-  .epc--active & {
-    border-color: rgba(140, 67, 206, 0.45);
-    box-shadow: 0 0 0 6px rgba(140, 67, 206, 0.15);
+  img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    border-radius: 8px;
   }
 }
 
-.epc-logo {
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
-  border-radius: 8px;
+.exp-popup--dark .exp-popup-logo {
+  background: rgba(255,255,255,0.06);
 }
 
-.epc-meta {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.epc-role {
-  font-size: 0.97rem;
+.exp-popup-role {
+  font-size: 1.1rem;
   font-weight: 700;
   color: $textColor;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: color 0.25s;
-
-  .epc--dark & { color: $textColorDark; }
+  margin: 0 0 4px;
+  line-height: 1.2;
 }
 
-.epc-company {
-  font-size: 0.82rem;
+.exp-popup--dark .exp-popup-role { color: #e2e8f0; }
+
+.exp-popup-company {
+  font-size: 0.88rem;
   font-weight: 600;
   color: $buttonColor;
   margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.epc-date {
-  font-size: 0.72rem;
+.exp-popup-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
   font-weight: 600;
   color: $subTitle;
-  background: rgba(85, 25, 139, 0.08);
-  border: 1px solid rgba(85, 25, 139, 0.15);
+  background: rgba($buttonColor, 0.07);
+  border: 1px solid rgba($buttonColor, 0.14);
   border-radius: 20px;
-  padding: 2px 9px;
-  display: inline-block;
-  margin-top: 2px;
+  padding: 4px 12px;
+  margin-bottom: 14px;
+  i { font-size: 0.75rem; }
 }
 
-.epc-chevron {
-  flex-shrink: 0;
-  color: $subTitle;
-  font-size: 0.8rem;
-  i { transition: transform 0.35s cubic-bezier(0.34, 1.2, 0.64, 1); }
-}
-
-/* ── Expandable detail ── */
-.epc-detail {
-  position: relative;
-  z-index: 1;
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  padding: 0 20px;
-  transition:
-    max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity    0.35s ease,
-    padding    0.35s ease;
-}
-
-.epc-desc {
-  font-size: 0.84rem;
+.exp-popup-desc {
+  font-size: 0.88rem;
   line-height: 1.7;
   color: $subTitle;
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   text-align: justify;
   hyphens: auto;
+  max-height: 130px;
+  overflow-y: auto;
 }
 
-.epc--dark .epc-desc { color: rgba(226, 232, 240, 0.75); }
+.exp-popup--dark .exp-popup-desc { color: rgba(226,232,240,0.72); }
 
-.epc-bullets {
+.exp-popup-bullets {
   margin: 0;
   padding-left: 1.1rem;
-  font-size: 0.81rem;
+  font-size: 0.84rem;
   line-height: 1.75;
   color: $subTitle;
+  max-height: 150px;
+  overflow-y: auto;
 
-  li { margin-bottom: 4px; &::marker { color: $buttonColor; } }
+  li { margin-bottom: 5px; &::marker { color: $buttonColor; } }
 }
 
-.epc--dark .epc-bullets { color: rgba(226, 232, 240, 0.7); }
+.exp-popup--dark .exp-popup-bullets { color: rgba(226,232,240,0.65); }
 
 
-/* ════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
    RESPONSIVE
-   ════════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════════════ */
 @media (max-width: 1380px) {
   .experience-heading { font-size: 40px; }
 }
 
-@media (max-width: 900px) {
-  .epc-grid,
-  .epc-track-nodes {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .experience-heading { font-size: 30px; text-align: center; }
 
-  .epc-grid,
-  .epc-track-nodes {
-    grid-template-columns: 1fr;
+  .exp-popup {
+    width: 280px !important;
   }
 
-  /* Hide rail on single-column — nodes still show */
-  .epc-track-rail { display: none; }
-
-  .epc--active  { transform: translateY(-6px) scale(1.01); }
-  .epc--dimmed  { opacity: 0.6; filter: blur(0.5px); }
+  .exp-popup-role { font-size: 0.95rem; }
+  .exp-popup-desc { max-height: 90px; }
+  .exp-popup-bullets { max-height: 100px; }
 }
