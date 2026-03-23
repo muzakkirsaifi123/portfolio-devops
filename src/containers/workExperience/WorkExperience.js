@@ -2,6 +2,10 @@ import React, {useState, useRef, useEffect, useContext} from "react";
 import "./WorkExperience.scss";
 import {workExperiences} from "../../portfolio";
 import StyleContext from "../../contexts/StyleContext";
+import DisplayLottie from "../../components/displayLottie/DisplayLottie";
+// Place developer.json in src/assets/lottie/ (download from LottieFiles)
+let developerLottie;
+try { developerLottie = require("../../assets/lottie/developer.json"); } catch(e) { developerLottie = require("../../assets/lottie/codingPerson"); }
 
 const BEACON   = 58;   // logo circle diameter (px)
 const STEP_H   = 100;  // vertical gap between nodes
@@ -37,7 +41,7 @@ function buildPath(positions) {
 /* ── Popup card ─────────────────────────────────────────────── */
 function PopupCard({card, isDark, pos, containerW, onEnter, onLeave}) {
   const isLeft  = pos.side === "left";
-  const POPUP_W = 420;
+  const POPUP_W = 370;
 
   // Position popup to the INNER side (toward centre of trail)
   const style = isLeft
@@ -121,6 +125,51 @@ function TrackNode({card, pos, isDark, isActive, isDimmed, onHover, onLeave, con
   );
 }
 
+/* ── Animated right panel ───────────────────────────────────── */
+function ExpRightPanel({isDark, stats}) {
+  return (
+    <div className={`exp-right-panel${isDark ? " exp-right-panel--dark" : ""}`}>
+
+      {/* Orbital ring decoration */}
+      <div className="exp-orbit exp-orbit--1">
+        <span className="exp-orbit-dot" />
+      </div>
+      <div className="exp-orbit exp-orbit--2">
+        <span className="exp-orbit-dot" />
+      </div>
+      <div className="exp-orbit exp-orbit--3">
+        <span className="exp-orbit-dot" />
+      </div>
+
+      {/* Floating orbs */}
+      <div className="exp-orb exp-orb--a" />
+      <div className="exp-orb exp-orb--b" />
+      <div className="exp-orb exp-orb--c" />
+
+      {/* Central Lottie */}
+      <div className="exp-rp-lottie">
+        <DisplayLottie animationData={developerLottie} />
+      </div>
+
+      {/* Stat chips */}
+      <div className="exp-rp-stats">
+        {stats.map((s, i) => (
+          <div className="exp-rp-stat" key={i}>
+            <span className="exp-rp-stat-num">{s.value}</span>
+            <span className="exp-rp-stat-label">{s.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Floating tag pills */}
+      <span className="exp-tag exp-tag--1">DevOps</span>
+      <span className="exp-tag exp-tag--2">Cloud</span>
+      <span className="exp-tag exp-tag--3">CI/CD</span>
+      <span className="exp-tag exp-tag--4">K8s</span>
+    </div>
+  );
+}
+
 /* ── Main component ─────────────────────────────────────────── */
 export default function WorkExperience() {
   const {isDark}            = useContext(StyleContext);
@@ -158,8 +207,9 @@ export default function WorkExperience() {
 
   if (!workExperiences.display) return null;
 
-  const cards = workExperiences.experience;   // index 0 = oldest = bottom
-  const N     = cards.length;
+  const cards    = workExperiences.experience;   // index 0 = oldest = bottom
+  const N        = cards.length;
+  const stats    = workExperiences.expStats || [{value:"4+",label:"Years Exp"},{value:"50+",label:"Deployments"},{value:"99%",label:"Uptime"}];
   const SVG_H = PAD_T + (N - 1) * STEP_H + PAD_B;
   const pos   = calcPositions(N, W);
   const pathD = buildPath(pos);
@@ -175,6 +225,9 @@ export default function WorkExperience() {
           Experiences
         </h1>
 
+        <div className="exp-layout">
+          {/* ── Left: zigzag trail ── */}
+          <div className="exp-col-left">
         {/* Track */}
         <div
           ref={wrapRef}
@@ -275,6 +328,13 @@ export default function WorkExperience() {
             />
           )}
         </div>
+          </div>{/* /exp-col-left */}
+
+          {/* ── Right: animated panel ── */}
+          <div className="exp-col-right">
+            <ExpRightPanel isDark={isDark} stats={stats} />
+          </div>
+        </div>{/* /exp-layout */}
       </div>
     </div>
   );

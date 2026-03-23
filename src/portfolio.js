@@ -235,6 +235,11 @@ const techStack = {
 
 const workExperiences = {
   display: true, //Set it to true to show workExperiences Section
+  expStats: [
+    {value: "4+",  label: "Years Exp"},
+    {value: "50+", label: "Deployments"},
+    {value: "99%", label: "Uptime"}
+  ],
   experience: [
     // {
     //   role: "Software Engineer",
@@ -531,6 +536,10 @@ try {
     }
 
     if (ov.techStack) Object.assign(techStack, ov.techStack);
+
+    if (ov.workExperiences && Array.isArray(ov.workExperiences.expStats)) {
+      workExperiences.expStats = ov.workExperiences.expStats;
+    }
 
     if (ov.workExperiences && ov.workExperiences.experience) {
       const ovExp = ov.workExperiences.experience;

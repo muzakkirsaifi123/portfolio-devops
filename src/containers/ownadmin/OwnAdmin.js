@@ -110,6 +110,11 @@ function buildInitial() {
       }))
     },
     workExperiences: {
+      expStats: (workExperiences.expStats || [
+        {value:"4+",label:"Years Exp"},
+        {value:"50+",label:"Deployments"},
+        {value:"99%",label:"Uptime"}
+      ]).map(s => ({value: s.value || "", label: s.label || ""})),
       experience: (workExperiences.experience || []).map(e => {
         const {dateStart, dateEnd, datePresent} = parseDateRange(e.date || "");
         return {
@@ -227,6 +232,7 @@ export default function OwnAdmin() {
       },
       techStack: form.techStack,
       workExperiences: {
+        expStats: form.workExperiences.expStats,
         experience: form.workExperiences.experience.map(e => ({
           role:           e.role,
           company:        e.company,
@@ -419,6 +425,23 @@ export default function OwnAdmin() {
           {tab === "experience" && (
             <section>
               <h2 className="oa-section-title">Work Experience</h2>
+
+              {/* Exp stats panel */}
+              <div className="oa-group">
+                <h3 className="oa-group-title">Right Panel — Stat Chips</h3>
+                <p className="oa-hint">These 3 stat chips appear on the right side of the experience section (Years Exp, Deployments, Uptime).</p>
+                {(form.workExperiences.expStats || []).map((s, i) => (
+                  <div key={i} style={{display:"flex", gap:"12px", marginBottom:"12px", alignItems:"flex-end"}}>
+                    <OaField label={`#${i+1} Value`} value={s.value} onChange={v => setItem("workExperiences","expStats",i,"value",v)} />
+                    <OaField label="Label"            value={s.label} onChange={v => setItem("workExperiences","expStats",i,"label",v)} />
+                    <button className="oa-remove" style={{marginBottom:"16px"}} onClick={() => removeItem("workExperiences","expStats",i)}>✕</button>
+                  </div>
+                ))}
+                <button className="oa-add" onClick={() => addItem("workExperiences","expStats",{value:"",label:""})}>
+                  + Add Stat
+                </button>
+              </div>
+
               <p className="oa-hint">Company logo: paste a public image URL (CDN, GitHub raw, etc.).</p>
               {form.workExperiences.experience.map((e, i) => (
                 <div className="oa-item" key={i}>
