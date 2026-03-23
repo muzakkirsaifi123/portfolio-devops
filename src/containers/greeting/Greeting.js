@@ -1,6 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
 import {Fade} from "react-reveal";
-import emoji from "react-easy-emoji";
 import "./Greeting.scss";
 import landingPerson from "../../assets/lottie/landingPerson";
 import DisplayLottie from "../../components/displayLottie/DisplayLottie";
@@ -10,15 +9,7 @@ import Button from "../../components/button/Button";
 import {illustration, greeting} from "../../portfolio";
 import StyleContext from "../../contexts/StyleContext";
 
-// Define titles outside the component
 const titles = ["Senior DevOps Engineer", "Senior Cloud Engineer", "DevSecOps Engineer"];
-
-const stats = [
-  {value: "4+", label: "Years Experience"},
-  {value: "3", label: "Clouds (AWS/Azure/GCP)"},
-  {value: "5+", label: "Certifications"},
-  {value: "15+", label: "Projects Delivered"}
-];
 
 export default function Greeting() {
   const {isDark} = useContext(StyleContext);
@@ -74,7 +65,7 @@ export default function Greeting() {
                 className={isDark ? "dark-mode greeting-text" : "greeting-text"}
               >
                 {greeting.title}{" "}
-                <span className="wave-emoji">{emoji("👋")}</span>
+                <span className="wave-emoji" role="img" aria-label="wave">👋</span>
               </h1>
               <h2 className="greeting-title2">
                 I am a {currentTitle}
@@ -102,18 +93,16 @@ export default function Greeting() {
               </div>
 
               {/* Stats bar */}
-              <div
-                className={
-                  isDark ? "dark-mode hero-stats" : "hero-stats"
-                }
-              >
-                {stats.map((s, i) => (
-                  <div key={i} className="hero-stat-item">
-                    <span className="hero-stat-value">{s.value}</span>
-                    <span className="hero-stat-label">{s.label}</span>
-                  </div>
-                ))}
-              </div>
+              {(greeting.heroStats || []).length > 0 && (
+                <div className={isDark ? "dark-mode hero-stats" : "hero-stats"}>
+                  {(greeting.heroStats || []).map((s, i) => (
+                    <div key={i} className="hero-stat-card">
+                      <span className="hero-stat-value">{s.value}</span>
+                      <span className="hero-stat-label">{s.label}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <div className="greeting-image-div">

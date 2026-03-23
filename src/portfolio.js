@@ -22,15 +22,17 @@ const illustration = {
 const greeting = {
   username: "MuZakkir Saifi",
   title: "Hey !! I'm MuZakkir",
-  // subTitle: emoji(
-  //   "a passionate DevOps Engineer dedicated to streamlining processes and fostering collaboration between development and operations teams. With expertise in infrastructure as code, automation, and cloud technologies, I thrive in dynamic environments where innovation and efficiency are paramount. From small startups to large enterprises, I've led transformative initiatives to accelerate software delivery and enhance reliability. Let's embrace the principles of DevOps together and pave the way for a brighter future in technology."
-  // ),
-  subTitle: emoji(
-    "DevOps enthusiast committed to streamlining workflows and fostering collaboration for efficient software delivery. With expertise in automation and cloud technologies, I drive continuous integration and deployment, revolutionizing development practices.!"
-  ),
+  subTitle:
+    "DevOps enthusiast committed to streamlining workflows and fostering collaboration for efficient software delivery. With expertise in automation and cloud technologies, I drive continuous integration and deployment, revolutionizing development practices.",
   resumeLink:
-    "https://drive.google.com/file/d/1ofFdKF_mqscH8WvXkSObnVvC9kK7Ldlu/view?usp=sharing", // Set to empty to hide the button
-  displayGreeting: true // Set false to hide this section, defaults to true
+    "https://drive.google.com/file/d/1ofFdKF_mqscH8WvXkSObnVvC9kK7Ldlu/view?usp=sharing",
+  heroStats: [
+    {value: "4+", label: "Years Experience"},
+    {value: "3",  label: "Clouds (AWS/Azure/GCP)"},
+    {value: "5+", label: "Certifications"},
+    {value: "15+", label: "Projects Delivered"}
+  ],
+  displayGreeting: true
 };
 
 // Social Media Links
@@ -54,14 +56,10 @@ const skillsSection = {
   title: "What I do",
   subTitle: "CRAZY DEVOPS ENTHUSIAST! Who wants to explore every tech stack...",
   skills: [
-    emoji("⚡ Can automate the complete infras using terraform."),
-    emoji("⚡ Worked on the diffrent clouds like AWS, AZURE and GCP."),
-    emoji(
-      "⚡ Can write the CI/CD pipeline with the different tools like Jenkins, GitHub Action, Azure DevOps, Concourse and many more."
-    ),
-    emoji(
-      "⚡ Can worked with the various devops tools like - Ansible, Docker, Helm, Chef, Prometheus, Grafana, Kubernetes and many more.."
-    )
+    "⚡ Can automate the complete infras using terraform.",
+    "⚡ Worked on the diffrent clouds like AWS, AZURE and GCP.",
+    "⚡ Can write the CI/CD pipeline with the different tools like Jenkins, GitHub Action, Azure DevOps, Concourse and many more.",
+    "⚡ Can worked with the various devops tools like - Ansible, Docker, Helm, Chef, Prometheus, Grafana, Kubernetes and many more.."
   ],
 
   /* Uses Devicons v2.16 (https://devicon.dev) and Font Awesome 5 classnames.
@@ -420,7 +418,7 @@ const blogSection = {
   title: "Blogs",
   subtitle:
     "With Love for Developing cool stuff, I love to write and teach others what I have learnt.",
-  displayMediumBlogs: "true", // Set true to display fetched medium blogs instead of hardcoded ones
+  displayMediumBlogs: "false", // Set true to display fetched medium blogs instead of hardcoded ones
   blogs: [
     // {
     //   url: "https://blog.knoldus.com/how-to-perform-different-operations-on-aws-s3-bucket-using-boto3/",
@@ -495,59 +493,109 @@ const twitterDetails = {
 const isHireable = false; // Set false if you are not looking for a job. Also isHireable will be display as Open for opportunities: Yes/No in the GitHub footer
 
 // ── OwnAdmin live overrides ────────────────────────────────────────────────
-// If the user has saved edits via the /ownadmin page, apply them now so the
-// running site reflects those changes without needing a file change.
 try {
   const raw = localStorage.getItem("ownadmin_overrides");
   if (raw) {
     const ov = JSON.parse(raw);
-    if (ov.greeting)          Object.assign(greeting, ov.greeting);
-    if (ov.socialMediaLinks)  Object.assign(socialMediaLinks, ov.socialMediaLinks);
-    if (ov.contactInfo)       Object.assign(contactInfo, ov.contactInfo);
-    if (ov.skillsSection)     Object.assign(skillsSection, ov.skillsSection);
-    if (ov.techStack)         Object.assign(techStack, ov.techStack);
-    if (ov.workExperiences) {
-      // Merge text fields only; preserve image requires from original
-      ov.workExperiences.experience.forEach((e, i) => {
+    if (ov.greeting) {
+      const {heroStats, ...greetRest} = ov.greeting;
+      Object.assign(greeting, greetRest);
+      if (Array.isArray(heroStats) && heroStats.length) greeting.heroStats = heroStats;
+      // Guard: if subTitle got corrupted to [object Object], reset it
+      if (typeof greeting.subTitle !== "string" ||
+          greeting.subTitle.startsWith("[object")) {
+        greeting.subTitle = "DevOps enthusiast committed to streamlining workflows and fostering collaboration for efficient software delivery.";
+      }
+    }
+    if (ov.socialMediaLinks) Object.assign(socialMediaLinks, ov.socialMediaLinks);
+    if (ov.contactInfo)      Object.assign(contactInfo, ov.contactInfo);
+
+    if (ov.skillsSection) {
+      // Sanitize skill bullets — strip any [object Object] remnants from old saves
+      if (Array.isArray(ov.skillsSection.skills)) {
+        ov.skillsSection.skills = ov.skillsSection.skills
+          .map(s => String(s).replace(/^\[object Object\],?\s*/g, "").trim())
+          .filter(Boolean);
+      }
+      // softwareSkills may include imageUrl overrides per-skill
+      if (ov.skillsSection.softwareSkills) {
+        ov.skillsSection.softwareSkills.forEach((s, i) => {
+          if (skillsSection.softwareSkills[i]) Object.assign(skillsSection.softwareSkills[i], s);
+          else skillsSection.softwareSkills.push(s);
+        });
+        // trim if user removed items
+        skillsSection.softwareSkills.length = ov.skillsSection.softwareSkills.length;
+        delete ov.skillsSection.softwareSkills;
+      }
+      Object.assign(skillsSection, ov.skillsSection);
+    }
+
+    if (ov.techStack) Object.assign(techStack, ov.techStack);
+
+    if (ov.workExperiences && ov.workExperiences.experience) {
+      const ovExp = ov.workExperiences.experience;
+      // Replace the whole array length, merging logos from originals
+      ovExp.forEach((e, i) => {
+        const {companylogoUrl, ...rest} = e;
         if (workExperiences.experience[i]) {
-          const {companylogo, ...rest} = e; // keep original logo
+          if (companylogoUrl) workExperiences.experience[i].companylogo = companylogoUrl;
           Object.assign(workExperiences.experience[i], rest);
+        } else {
+          workExperiences.experience.push({
+            ...rest,
+            companylogo: companylogoUrl || ""
+          });
         }
       });
+      workExperiences.experience.length = ovExp.length;
     }
-    if (ov.educationInfo) {
+
+    if (ov.educationInfo && ov.educationInfo.schools) {
       ov.educationInfo.schools.forEach((s, i) => {
+        const {logoUrl, ...rest} = s;
         if (educationInfo.schools[i]) {
-          const {logo, ...rest} = s;
+          if (logoUrl) educationInfo.schools[i].logo = logoUrl;
           Object.assign(educationInfo.schools[i], rest);
+        } else {
+          educationInfo.schools.push({...rest, logo: logoUrl || ""});
         }
       });
+      educationInfo.schools.length = ov.educationInfo.schools.length;
     }
+
     if (ov.achievementSection) {
       if (ov.achievementSection.title)    achievementSection.title    = ov.achievementSection.title;
       if (ov.achievementSection.subtitle) achievementSection.subtitle = ov.achievementSection.subtitle;
       if (ov.achievementSection.achievementsCards) {
         ov.achievementSection.achievementsCards.forEach((c, i) => {
+          const {imageUrl, ...rest} = c;
           if (achievementSection.achievementsCards[i]) {
-            const {image, ...rest} = c;
+            if (imageUrl) achievementSection.achievementsCards[i].image = imageUrl;
             Object.assign(achievementSection.achievementsCards[i], rest);
+          } else {
+            achievementSection.achievementsCards.push({...rest, image: imageUrl || ""});
           }
         });
+        achievementSection.achievementsCards.length = ov.achievementSection.achievementsCards.length;
       }
     }
+
     if (ov.blogSection) {
       if (ov.blogSection.subtitle) blogSection.subtitle = ov.blogSection.subtitle;
       if (ov.blogSection.blogs)    blogSection.blogs    = ov.blogSection.blogs;
     }
-    if (ov.bigProjects) {
-      if (ov.bigProjects.projects) {
-        ov.bigProjects.projects.forEach((p, i) => {
-          if (bigProjects.projects[i]) {
-            const {image, ...rest} = p;
-            Object.assign(bigProjects.projects[i], rest);
-          }
-        });
-      }
+
+    if (ov.bigProjects && ov.bigProjects.projects) {
+      ov.bigProjects.projects.forEach((p, i) => {
+        const {imageUrl, ...rest} = p;
+        if (bigProjects.projects[i]) {
+          if (imageUrl) bigProjects.projects[i].image = imageUrl;
+          Object.assign(bigProjects.projects[i], rest);
+        } else {
+          bigProjects.projects.push({...rest, image: imageUrl || ""});
+        }
+      });
+      bigProjects.projects.length = ov.bigProjects.projects.length;
     }
   }
 } catch (e) {

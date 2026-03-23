@@ -3,8 +3,15 @@ import "./WorkExperience.scss";
 import {workExperiences} from "../../portfolio";
 import StyleContext from "../../contexts/StyleContext";
 
+// Extract the start year from a date string like "July 2021 – Jan 2022"
+function extractYear(date) {
+  const m = String(date || "").match(/\b(20\d{2}|19\d{2})\b/);
+  return m ? m[1] : null;
+}
+
 function TimelineCard({card, isDark, index}) {
   const isEven = index % 2 === 0;
+  const year = extractYear(card.date);
 
   return (
     <div
@@ -14,6 +21,7 @@ function TimelineCard({card, isDark, index}) {
     >
       <div className="timeline-dot">
         <img src={card.companylogo} alt={card.company} className="timeline-logo" />
+        {year && <span className="timeline-year">{year}</span>}
       </div>
 
       {/* flip wrapper */}

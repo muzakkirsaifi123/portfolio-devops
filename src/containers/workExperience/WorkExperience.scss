@@ -104,6 +104,23 @@
   border-radius: 50%;
 }
 
+/* Year label below the dot */
+.timeline-year {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: $buttonColor;
+  background: rgba(85, 25, 139, 0.1);
+  border: 1px solid rgba(85, 25, 139, 0.25);
+  border-radius: 20px;
+  padding: 2px 7px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
 /* ── Flip card wrapper ────────────────────────────────────── */
 .flip-card {
   width: 100%;

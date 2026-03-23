@@ -6,6 +6,24 @@
   flex-shrink: 0;
 }
 
+/* ── Global text justification for all description paragraphs ── */
+.greeting-text-p,
+.subTitle.skills-text,
+.skills-text,
+.edu-desc,
+.school-desc,
+.flip-back-desc,
+.experience-description,
+.project-description,
+.repo-description,
+.achievement-text,
+.blog-subtitle,
+.contact-subtitle,
+.sp-hero-desc {
+  text-align: justify;
+  hyphens: auto;
+}
+
 /* ── Achievement / education reveal wrappers fill the grid cell ── */
 .achievement-cards-div > [data-reveal] {
   display: flex;
