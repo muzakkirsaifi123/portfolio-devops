@@ -1,0 +1,85 @@
+@import "../../_globalColor";
+
+.social-media-div {
+  font-size: 2em;
+}
+
+.icon-button {
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+.icon-button i {
+  color: $textColorDark;
+  border-radius: 2.6rem;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1.3rem;
+  height: 2.6rem;
+  line-height: 2.6rem;
+  margin: 0 5px;
+  position: relative;
+  text-align: center;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  width: 2.6rem;
+  margin-bottom: 10px;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease, background-color 0.2s ease;
+}
+
+.icon-button i:hover {
+  transform: scale(1.22) translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.facebook i {
+  background-color: $faceBook;
+}
+
+.linkedin i {
+  background-color: $linkedin;
+}
+
+.github i {
+  background-color: $github;
+}
+
+.gitlab i {
+  background-color: $gitlab;
+}
+
+.google i {
+  background-color: $google;
+}
+
+.twitter i {
+  background-color: $twitter;
+}
+
+.medium i {
+  background-color: $medium;
+}
+
+.stack-overflow i {
+  background-color: $stackoverflow;
+}
+
+.kaggle i {
+  background-color: $kaggle;
+}
+
+.instagram i {
+  background-color: $instagram;
+}
+
+/* Hover Transition — keep brand color, just lift */
+
+/* Media Query */
+@media (max-width: 768px) {
+  .social-media-div {
+    text-align: center;
+  }
+}

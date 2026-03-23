@@ -1,0 +1,78 @@
+@import "../../_globalColor";
+
+.main-button {
+  background-color: $buttonColor;
+  border: solid 1px $buttonColor;
+  color: $textColorDark;
+  font-weight: 700;
+  width: max-content;
+  padding: 13px 22px;
+  margin-right: 50px;
+  text-transform: uppercase;
+  border-radius: 6px;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  margin-top: 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out 0s;
+}
+
+.main-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.28),
+    transparent
+  );
+  transform: skewX(-20deg);
+  animation: btn-shimmer 2.8s infinite;
+}
+
+@keyframes btn-shimmer {
+  0% {
+    left: -100%;
+  }
+  60%,
+  100% {
+    left: 200%;
+  }
+}
+
+.main-button:hover {
+  background-color: $darkBoxShadow2;
+  color: $buttonColor;
+  transition: all 0.3s ease 0s;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(85, 25, 139, 0.35);
+}
+.project-button {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.project-button > .main-button {
+  margin-right: 0 !important;
+}
+/* Media Query */
+@media (max-width: 768px) {
+  .main-button {
+    font-size: 0.938rem;
+    padding: 12px 18px;
+    margin-right: 0px;
+  }
+}
+@media (max-width: 320px) {
+  .main-button {
+    font-size: 0.75rem;
+  }
+}

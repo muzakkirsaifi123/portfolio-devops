@@ -1,0 +1,46 @@
+@import "../_globalColor";
+
+.dark-mode {
+  background-color: $darkBackground;
+  color: white;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Scroll progress bar */
+#scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(to right, $buttonColor, $buttonHover);
+  z-index: 9999;
+  transition: width 0.1s linear;
+  border-radius: 0 2px 2px 0;
+}
+
+/* Section heading accent line */
+.skills-heading,
+.achievement-heading,
+.education-heading {
+  position: relative;
+  display: inline-block;
+}
+
+.skills-heading::after,
+.achievement-heading::after,
+.education-heading::after {
+  content: "";
+  display: block;
+  width: 64px;
+  height: 4px;
+  background: linear-gradient(to right, $buttonColor, $buttonHover);
+  border-radius: 3px;
+  margin-top: 10px;
+  transition: width 0.4s ease;
+}
+
+.skills-heading:hover::after,
+.achievement-heading:hover::after,
+.education-heading:hover::after {
+  width: 100%;
+}
