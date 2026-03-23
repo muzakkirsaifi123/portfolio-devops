@@ -1,318 +1,454 @@
 @import "../../_globalColor";
 
+/* ── Heading ──────────────────────────────────────────────── */
 .experience-heading {
   font-size: 44px;
   font-weight: 400;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 }
 
 .experience-container {
   width: 90%;
   padding: 20px 10px;
-  margin: 0px auto;
+  margin: 0 auto;
   margin-top: 2rem;
 }
 
-/* ── Timeline wrapper ─────────────────────────────────────── */
-.timeline {
-  position: relative;
-  padding: 0 0 2rem;
+/* ════════════════════════════════════════════════════════════
+   TRACK
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Keyframes ── */
+@keyframes rail-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
 }
 
-/* Center vertical line */
-.timeline-line {
+@keyframes rail-pulse {
+  0%, 100% { opacity: 0.25; }
+  50%       { opacity: 0.55; }
+}
+
+@keyframes ring-radar {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  100% { transform: scale(2.8); opacity: 0;   }
+}
+
+@keyframes node-arrow-bounce {
+  0%, 100% { transform: translateY(0) scaleX(0.9); opacity: 0.5; }
+  50%       { transform: translateY(4px) scaleX(1); opacity: 1;   }
+}
+
+/* ── Track wrapper ── */
+.epc-track {
+  position: relative;
+  margin-bottom: 18px;
+  padding: 8px 0 0;
+}
+
+/* ── Rail line ── */
+.epc-track-rail {
   position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 3px;
+  top: 50%;
+  left: 7%;
+  right: 7%;
+  height: 2px;
+  transform: translateY(-50%);
   background: linear-gradient(
-    to bottom,
+    90deg,
+    transparent 0%,
+    rgba($buttonColor, 0.4) 15%,
+    rgba($buttonHover, 0.5) 50%,
+    rgba($buttonColor, 0.4) 85%,
+    transparent 100%
+  );
+  animation: rail-pulse 3s ease-in-out infinite;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+/* Traveling shimmer spark */
+.epc-track-rail-glow {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  width: 20%;
+  height: 6px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
     transparent,
-    $buttonColor 8%,
-    $buttonHover 50%,
-    $buttonColor 92%,
+    rgba(255, 255, 255, 0.9),
     transparent
   );
-  transform: translateX(-50%);
-  border-radius: 3px;
+  filter: blur(2px);
+  animation: rail-shimmer 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* ── Reveal wrapper — must not affect layout ──────────────── */
-[data-reveal] > .timeline-item {
-  /* ensure no inherited transform breaks the timeline positioning */
-}
-
-/* ── Timeline item ─────────────────────────────────────────── */
-.timeline-item {
+/* ── Node row ── */
+.epc-track-nodes {
+  display: grid;
+  grid-template-columns: repeat(var(--exp-cols, 4), 1fr);
+  gap: 20px;
   position: relative;
-  width: 46%;
-  margin-bottom: 3rem;
 }
 
-.timeline-item--left {
-  left: 0;
-  text-align: right;
-}
-
-.timeline-item--right {
-  left: 54%;
-  text-align: left;
-}
-
-/* ── Logo dot on the center line ──────────────────────────── */
-@keyframes dotPulse {
-  0%, 100% { box-shadow: 0 0 0 5px rgba(85, 25, 139, 0.12); }
-  50%       { box-shadow: 0 0 0 10px rgba(85, 25, 139, 0.22), 0 0 20px rgba(85, 25, 139, 0.15); }
-}
-
-.timeline-dot {
-  position: absolute;
-  top: 20px;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: $lightBackground2;
-  border: 3px solid $buttonColor;
-  box-shadow: 0 0 0 5px rgba(85, 25, 139, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: dotPulse 3s ease-in-out infinite;
-}
-
-.timeline-item--left .timeline-dot {
-  right: -8.5%;
-}
-
-.timeline-item--right .timeline-dot {
-  left: -8.5%;
-}
-
-.timeline-dot:hover {
-  transform: scale(1.12);
-  box-shadow: 0 0 0 8px rgba(85, 25, 139, 0.18);
-}
-
-.timeline-logo {
-  width: 34px;
-  height: 34px;
-  object-fit: contain;
-  border-radius: 50%;
-}
-
-/* Year label below the dot */
-.timeline-year {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: $buttonColor;
-  background: rgba(85, 25, 139, 0.1);
-  border: 1px solid rgba(85, 25, 139, 0.25);
-  border-radius: 20px;
-  padding: 2px 7px;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-/* ── Flip card wrapper ────────────────────────────────────── */
-.flip-card {
-  width: 100%;
-  perspective: 1200px;
-  min-height: 220px;
-}
-
-.flip-card-inner {
-  position: relative;
-  width: 100%;
-  min-height: 220px;
-  transform-style: preserve-3d;
-  transition: transform 0.7s cubic-bezier(0.34, 1.1, 0.64, 1);
-}
-
-.flip-card:hover .flip-card-inner {
-  transform: rotateY(180deg);
-}
-
-/* ── Front face ─────────────────────────────────────────── */
-.flip-card-front,
-.flip-card-back {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  border-radius: 14px;
-  padding: 1.4rem 1.6rem;
-}
-
-.flip-card-front {
-  background: $lightBackground2;
-  border: 1px solid $lightBorder1;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+/* ── Individual beacon node ── */
+.epc-node {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 0.4rem;
+  gap: 6px;
+  cursor: pointer;
+  transition: opacity 0.3s ease, filter 0.3s ease;
 }
 
-.flip-card-front--dark {
-  background: lighten(#171c28, 4%);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+.epc-node--dim {
+  opacity: 0.25;
+  filter: blur(1px);
 }
 
-.flip-front-logo {
-  width: 64px;
-  height: 64px;
+/* ── Radar ring container ── */
+.epc-node-rings {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+/* Expanding radar rings */
+.epc-node-ring {
+  position: absolute;
+  inset: 0;
   border-radius: 50%;
-  background: $lightBackground3;
-  border: 2px solid rgba(85, 25, 139, 0.2);
+  border: 1.5px solid $buttonColor;
+  opacity: 0;
+  animation: ring-radar 2.8s ease-out infinite;
+
+  &--1 { animation-delay: 0s; }
+  &--2 { animation-delay: 1.4s; }
+}
+
+/* Rings are subtle by default, vivid when active */
+.epc-node--active .epc-node-ring {
+  border-color: $buttonHover;
+  border-width: 2px;
+}
+
+/* ── Logo circle ── */
+.epc-node-logo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: $lightBackground2;
+  border: 2px solid rgba($buttonColor, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  margin-bottom: 0.4rem;
-  box-shadow: 0 0 0 6px rgba(85, 25, 139, 0.08);
+  box-shadow: 0 0 0 4px rgba($buttonColor, 0.08);
+  transition:
+    border-color  0.3s ease,
+    transform     0.3s cubic-bezier(0.34, 1.4, 0.64, 1),
+    box-shadow    0.3s ease;
+
+  img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    border-radius: 50%;
+  }
 }
 
-.flip-company-logo {
-  width: 44px;
-  height: 44px;
-  object-fit: contain;
+.dark-mode .epc-node-logo {
+  background: lighten(#171c28, 5%);
+  border-color: rgba($buttonColor, 0.4);
+}
+
+.epc-node--active .epc-node-logo {
+  border-color: $buttonHover;
+  transform: scale(1.18);
+  box-shadow:
+    0 0 0 6px rgba($buttonColor, 0.15),
+    0 0 24px rgba($buttonColor, 0.4);
+}
+
+/* ── Year label ── */
+.epc-node-year {
+  font-size: 0.67rem;
+  font-weight: 700;
+  color: $subTitle;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  transition: color 0.25s ease;
+}
+
+.epc-node--active .epc-node-year {
+  color: $buttonColor;
+}
+
+/* ── Down-arrow connector ── */
+.epc-node-arrow {
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid rgba($buttonColor, 0.4);
+  border-bottom: 2px solid rgba($buttonColor, 0.4);
+  transform: rotate(45deg);
+  animation: node-arrow-bounce 1.5s ease-in-out infinite;
+  transition: border-color 0.3s;
+}
+
+.epc-node--active .epc-node-arrow {
+  border-color: $buttonHover;
+}
+
+.epc-node--dim .epc-node-arrow {
+  opacity: 0;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   CARDS
+   ════════════════════════════════════════════════════════════ */
+
+.epc-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--exp-cols, 4), 1fr);
+  gap: 20px;
+}
+
+/* ── Glow pulse animation ── */
+@keyframes epc-glow-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%       { opacity: 0.75; transform: scale(1.1); }
+}
+
+/* ── Card shell ── */
+.epc {
+  position: relative;
+  border-radius: 18px;
+  border: 1px solid $lightBorder1;
+  overflow: visible;
+  cursor: pointer;
+  transition:
+    transform     0.35s cubic-bezier(0.34, 1.2, 0.64, 1),
+    box-shadow    0.35s ease,
+    opacity       0.35s ease,
+    filter        0.35s ease,
+    border-color  0.35s ease;
+}
+
+/* ── Inner clip wrapper ── */
+.epc-inner {
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+  background: $lightBackground2;
+}
+
+.epc--dark .epc-inner {
+  background: lighten(#171c28, 3%);
+}
+
+/* ── Glow blob ── */
+.epc-glow {
+  position: absolute;
+  width: 220px;
+  height: 220px;
   border-radius: 50%;
+  background: radial-gradient(circle, rgba(106, 17, 203, 0.5), transparent 70%);
+  filter: blur(40px);
+  top: -30px;
+  right: -30px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 0;
 }
 
-.flip-role {
-  font-size: 1rem;
+/* ── Active card ── */
+.epc--active {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow:
+    0 24px 60px rgba(106, 17, 203, 0.35),
+    0 0 0 1.5px rgba(140, 67, 206, 0.55),
+    inset 0 0 40px rgba(106, 17, 203, 0.06);
+  border-color: rgba(140, 67, 206, 0.5);
+  z-index: 10;
+
+  .epc-glow {
+    opacity: 1;
+    animation: epc-glow-pulse 2.5s ease-in-out infinite;
+  }
+
+  .epc-detail {
+    max-height: 500px;
+    opacity: 1;
+    padding-top: 12px;
+    padding-bottom: 20px;
+  }
+
+  .epc-chevron i { transform: rotate(180deg); color: $buttonColor; }
+  .epc-role      { color: $buttonColor; }
+}
+
+/* ── Dimmed card ── */
+.epc--dimmed {
+  opacity: 0.45;
+  filter: blur(1.5px);
+  transform: scale(0.97);
+}
+
+/* ── Card header ── */
+.epc-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+}
+
+.epc-logo-wrap {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: $lightBackground3;
+  border: 1px solid rgba(140, 67, 206, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 0 0 4px rgba(140, 67, 206, 0.08);
+  transition: border-color 0.3s, box-shadow 0.3s;
+
+  .epc--active & {
+    border-color: rgba(140, 67, 206, 0.45);
+    box-shadow: 0 0 0 6px rgba(140, 67, 206, 0.15);
+  }
+}
+
+.epc-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.epc-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.epc-role {
+  font-size: 0.97rem;
   font-weight: 700;
   color: $textColor;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.25s;
+
+  .epc--dark & { color: $textColorDark; }
 }
 
-.flip-card-front--dark .flip-role {
-  color: $textColorDark;
-}
-
-.flip-company {
-  font-size: 0.85rem;
+.epc-company {
+  font-size: 0.82rem;
   font-weight: 600;
   color: $buttonColor;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.flip-date {
-  font-size: 0.75rem;
+.epc-date {
+  font-size: 0.72rem;
   font-weight: 600;
   color: $subTitle;
   background: rgba(85, 25, 139, 0.08);
-  padding: 3px 10px;
+  border: 1px solid rgba(85, 25, 139, 0.15);
   border-radius: 20px;
-  margin-top: 4px;
+  padding: 2px 9px;
+  display: inline-block;
+  margin-top: 2px;
 }
 
-
-/* ── Back face ──────────────────────────────────────────── */
-.flip-card-back {
-  background: #1a1a2e;
-  border: 1px solid rgba(140, 67, 206, 0.25);
-  transform: rotateY(180deg);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 1.4rem 1.6rem 1.4rem 1.8rem;
+.epc-chevron {
+  flex-shrink: 0;
+  color: $subTitle;
+  font-size: 0.8rem;
+  i { transition: transform 0.35s cubic-bezier(0.34, 1.2, 0.64, 1); }
 }
 
-.flip-card-back--dark {
-  background: #12111e;
-  border-color: rgba(140, 67, 206, 0.3);
+/* ── Expandable detail ── */
+.epc-detail {
+  position: relative;
+  z-index: 1;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0 20px;
+  transition:
+    max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity    0.35s ease,
+    padding    0.35s ease;
 }
 
-.flip-back-role {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #c084fc;
-  margin: 0;
-}
-
-.flip-back-company {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: rgba(200, 196, 255, 0.75);
-  margin: 0 0 0.4rem;
-  border-bottom: 1px solid rgba(140, 67, 206, 0.2);
-  padding-bottom: 0.4rem;
-}
-
-.flip-back-desc {
-  font-size: 0.82rem;
-  line-height: 1.65;
-  color: rgba(226, 232, 240, 0.85);
-  margin: 0;
-}
-
-.flip-back-bullets {
-  margin: 0;
-  padding-left: 1.2rem;
-  font-size: 0.79rem;
+.epc-desc {
+  font-size: 0.84rem;
   line-height: 1.7;
-  color: rgba(226, 232, 240, 0.8);
+  color: $subTitle;
+  margin: 0 0 10px;
+  text-align: justify;
+  hyphens: auto;
 }
 
-.flip-back-bullets li {
-  margin-bottom: 0.2rem;
+.epc--dark .epc-desc { color: rgba(226, 232, 240, 0.75); }
+
+.epc-bullets {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.81rem;
+  line-height: 1.75;
+  color: $subTitle;
+
+  li { margin-bottom: 4px; &::marker { color: $buttonColor; } }
 }
 
-/* ── Media Queries ────────────────────────────────────────── */
+.epc--dark .epc-bullets { color: rgba(226, 232, 240, 0.7); }
+
+
+/* ════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════════════════════════ */
 @media (max-width: 1380px) {
-  .experience-heading {
-    font-size: 40px;
-  }
+  .experience-heading { font-size: 40px; }
 }
 
 @media (max-width: 900px) {
-  .timeline-line {
-    left: 26px;
-  }
-
-  .timeline-item {
-    width: calc(100% - 60px);
-    left: 60px !important;
-    text-align: left !important;
-    margin-bottom: 2rem;
-  }
-
-  .timeline-item--left .timeline-dot,
-  .timeline-item--right .timeline-dot {
-    left: -50px;
-    right: auto;
-  }
-
-  .flip-card,
-  .flip-card-inner {
-    min-height: 200px;
+  .epc-grid,
+  .epc-track-nodes {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 768px) {
-  .experience-heading {
-    font-size: 30px;
-    text-align: center;
+@media (max-width: 600px) {
+  .experience-heading { font-size: 30px; text-align: center; }
+
+  .epc-grid,
+  .epc-track-nodes {
+    grid-template-columns: 1fr;
   }
 
-  .timeline-role {
-    font-size: 0.95rem;
-  }
+  /* Hide rail on single-column — nodes still show */
+  .epc-track-rail { display: none; }
 
-  .timeline-company {
-    font-size: 0.82rem;
-  }
+  .epc--active  { transform: translateY(-6px) scale(1.01); }
+  .epc--dimmed  { opacity: 0.6; filter: blur(0.5px); }
 }

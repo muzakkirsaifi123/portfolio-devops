@@ -15,6 +15,54 @@ import {
 
 const LS_KEY = "ownadmin_overrides";
 
+/* ── Date helpers ──────────────────────────────────────────── */
+const MONTH_NAMES = [
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December"
+];
+const MONTH_SHORT = {
+  jan:"01", feb:"02", mar:"03", apr:"04", may:"05", jun:"06",
+  jul:"07", aug:"08", sep:"09", oct:"10", nov:"11", dec:"12",
+  january:"01", february:"02", march:"03", april:"04",
+  june:"06", july:"07", august:"08", september:"09",
+  october:"10", november:"11", december:"12"
+};
+
+// "July 2021" → "2021-07"   (for <input type="month">)
+function toMonthInput(str) {
+  if (!str || /present/i.test(str)) return "";
+  const parts = str.trim().toLowerCase().split(/\s+/);
+  const month = MONTH_SHORT[parts[0]];
+  const year  = parts[parts.length - 1];
+  return month && /^\d{4}$/.test(year) ? `${year}-${month}` : "";
+}
+
+// "2021-07" → "July 2021"
+function fromMonthInput(val) {
+  if (!val) return "";
+  const [year, month] = val.split("-");
+  const idx = parseInt(month, 10) - 1;
+  return MONTH_NAMES[idx] ? `${MONTH_NAMES[idx]} ${year}` : "";
+}
+
+// "July 2021 – Present"  →  { dateStart:"2021-07", dateEnd:"", datePresent:true }
+function parseDateRange(str) {
+  const parts = String(str || "").split(/\s*[–—-]\s*/);
+  const dateStart   = toMonthInput(parts[0] || "");
+  const isPresent   = parts.length > 1 && /present/i.test(parts[1]);
+  const dateEnd     = isPresent ? "" : toMonthInput(parts[1] || "");
+  return {dateStart, dateEnd, datePresent: isPresent};
+}
+
+// { dateStart:"2021-07", dateEnd:"", datePresent:true } → "July 2021 – Present"
+function formatDateRange(dateStart, dateEnd, datePresent) {
+  const s = fromMonthInput(dateStart);
+  if (!s) return "";
+  if (datePresent) return `${s} – Present`;
+  const e = fromMonthInput(dateEnd);
+  return e ? `${s} – ${e}` : s;
+}
+
 // Extract plain text from react-easy-emoji results (returns array or string)
 function emojiToText(val) {
   if (typeof val === "string") return val;
@@ -62,15 +110,20 @@ function buildInitial() {
       }))
     },
     workExperiences: {
-      experience: (workExperiences.experience || []).map(e => ({
-        role:           e.role        || "",
-        company:        e.company     || "",
-        companylogoUrl: typeof e.companylogo === "string" && e.companylogo.startsWith("http")
-                          ? e.companylogo : "",
-        date:           e.date        || "",
-        desc:           e.desc        || "",
-        descBullets:    (e.descBullets || []).join("\n")
-      }))
+      experience: (workExperiences.experience || []).map(e => {
+        const {dateStart, dateEnd, datePresent} = parseDateRange(e.date || "");
+        return {
+          role:           e.role    || "",
+          company:        e.company || "",
+          companylogoUrl: typeof e.companylogo === "string" && e.companylogo.startsWith("http")
+                            ? e.companylogo : "",
+          dateStart,
+          dateEnd,
+          datePresent,
+          desc:           e.desc || "",
+          descBullets:    (e.descBullets || []).join("\n")
+        };
+      })
     },
     educationInfo: {
       schools: (educationInfo.schools || []).map(s => ({
@@ -175,8 +228,12 @@ export default function OwnAdmin() {
       techStack: form.techStack,
       workExperiences: {
         experience: form.workExperiences.experience.map(e => ({
-          ...e,
-          descBullets: e.descBullets
+          role:           e.role,
+          company:        e.company,
+          companylogoUrl: e.companylogoUrl,
+          date:           formatDateRange(e.dateStart, e.dateEnd, e.datePresent),
+          desc:           e.desc,
+          descBullets:    e.descBullets
             ? e.descBullets.split("\n").map(s => s.trim()).filter(Boolean)
             : []
         }))
@@ -372,12 +429,19 @@ export default function OwnAdmin() {
                   <OaField label="Role / Title"        value={e.role}           onChange={v => setItem("workExperiences","experience",i,"role",v)} />
                   <OaField label="Company"             value={e.company}        onChange={v => setItem("workExperiences","experience",i,"company",v)} />
                   <OaImageField label="Company Logo (URL or upload)" value={e.companylogoUrl} onChange={v => setItem("workExperiences","experience",i,"companylogoUrl",v)} />
-                  <OaField label="Date range"          value={e.date}           onChange={v => setItem("workExperiences","experience",i,"date",v)} />
+                  <OaDateRange
+                    dateStart={e.dateStart}
+                    dateEnd={e.dateEnd}
+                    datePresent={e.datePresent}
+                    onStart={v  => setItem("workExperiences","experience",i,"dateStart",v)}
+                    onEnd={v    => setItem("workExperiences","experience",i,"dateEnd",v)}
+                    onPresent={v => setItem("workExperiences","experience",i,"datePresent",v)}
+                  />
                   <OaField label="Description"         value={e.desc}           onChange={v => setItem("workExperiences","experience",i,"desc",v)} textarea />
                   <OaField label="Bullet points (one per line)" value={e.descBullets} onChange={v => setItem("workExperiences","experience",i,"descBullets",v)} textarea rows={4} />
                 </div>
               ))}
-              <button className="oa-add" onClick={() => addItem("workExperiences","experience",{role:"",company:"",companylogoUrl:"",date:"",desc:"",descBullets:""})}>
+              <button className="oa-add" onClick={() => addItem("workExperiences","experience",{role:"",company:"",companylogoUrl:"",dateStart:"",dateEnd:"",datePresent:false,desc:"",descBullets:""})}>
                 + Add Experience
               </button>
             </section>
@@ -481,6 +545,52 @@ export default function OwnAdmin() {
       </div>
 
       {saved && <div className="oa-toast">Saved! Click "Preview Site" to see changes.</div>}
+    </div>
+  );
+}
+
+function OaDateRange({dateStart, dateEnd, datePresent, onStart, onEnd, onPresent}) {
+  return (
+    <div className="oa-date-range">
+      <span className="oa-label">Date Range</span>
+      <div className="oa-date-row">
+        <label className="oa-date-cell">
+          <span className="oa-date-sublabel">Start</span>
+          <input
+            className="oa-input oa-date-input"
+            type="month"
+            value={dateStart || ""}
+            onChange={e => onStart(e.target.value)}
+          />
+        </label>
+
+        <span className="oa-date-sep">–</span>
+
+        <label className="oa-date-cell">
+          <span className="oa-date-sublabel">End</span>
+          <input
+            className="oa-input oa-date-input"
+            type="month"
+            value={dateEnd || ""}
+            disabled={!!datePresent}
+            onChange={e => onEnd(e.target.value)}
+          />
+        </label>
+
+        <label className="oa-date-present">
+          <input
+            type="checkbox"
+            checked={!!datePresent}
+            onChange={e => onPresent(e.target.checked)}
+          />
+          <span>Present</span>
+        </label>
+      </div>
+      {(dateStart || dateEnd || datePresent) && (
+        <p className="oa-date-preview">
+          Preview: <strong>{formatDateRange(dateStart, dateEnd, datePresent) || "—"}</strong>
+        </p>
+      )}
     </div>
   );
 }

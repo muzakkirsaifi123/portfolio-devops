@@ -1,82 +1,154 @@
-import React, {useContext} from "react";
+import React, {useState, useContext} from "react";
 import "./WorkExperience.scss";
 import {workExperiences} from "../../portfolio";
 import StyleContext from "../../contexts/StyleContext";
 
-// Extract the start year from a date string like "July 2021 – Jan 2022"
 function extractYear(date) {
-  const m = String(date || "").match(/\b(20\d{2}|19\d{2})\b/);
-  return m ? m[1] : null;
+  const m = String(date || "").match(/\b(20\d{2}|19\d{2})\b/g);
+  return m ? m : [];
 }
 
-function TimelineCard({card, isDark, index}) {
-  const isEven = index % 2 === 0;
-  const year = extractYear(card.date);
+/* ── Track node (logo beacon above each card) ── */
+function TrackNode({card, isActive, isDimmed, onHover, onLeave}) {
+  const years = extractYear(card.date);
+  const label = years.length >= 2
+    ? `${years[0]} – ${years[years.length - 1]}`
+    : years[0] || "";
 
   return (
     <div
-      data-reveal={isEven ? "left" : "right"}
-      style={{transitionDelay: `${index * 0.15}s`}}
-      className={`timeline-item ${isEven ? "timeline-item--left" : "timeline-item--right"}`}
+      className={[
+        "epc-node",
+        isActive ? "epc-node--active" : "",
+        isDimmed ? "epc-node--dim"    : "",
+      ].filter(Boolean).join(" ")}
+      onMouseEnter={onHover}
+      onMouseLeave={onLeave}
     >
-      <div className="timeline-dot">
-        <img src={card.companylogo} alt={card.company} className="timeline-logo" />
-        {year && <span className="timeline-year">{year}</span>}
+      {/* Radar rings */}
+      <div className="epc-node-rings" aria-hidden="true">
+        <div className="epc-node-ring epc-node-ring--1" />
+        <div className="epc-node-ring epc-node-ring--2" />
+        {/* Logo sits centred inside the rings */}
+        <div className="epc-node-logo">
+          <img src={card.companylogo} alt={card.company} />
+        </div>
       </div>
 
-      {/* flip wrapper */}
-      <div className="flip-card">
-        <div className="flip-card-inner">
+      {/* Year label */}
+      {label && <span className="epc-node-year">{label}</span>}
 
-          {/* FRONT — logo + role + date */}
-          <div className={isDark ? "flip-card-front flip-card-front--dark" : "flip-card-front"}>
-            <div className="flip-front-logo">
-              <img src={card.companylogo} alt={card.company} className="flip-company-logo" />
-            </div>
-            <h3 className="flip-role">{card.role}</h3>
-            <h4 className="flip-company">{card.company}</h4>
-            <span className="flip-date">{card.date}</span>
+      {/* Connector arrow pointing down to the card */}
+      <div className="epc-node-arrow" aria-hidden="true" />
+    </div>
+  );
+}
+
+/* ── Experience card ── */
+function ExpCard({card, isDark, isActive, isDimmed, onHover, onLeave}) {
+  return (
+    <div
+      className={[
+        "epc",
+        isDark   ? "epc--dark"   : "",
+        isActive ? "epc--active" : "",
+        isDimmed ? "epc--dimmed" : "",
+      ].filter(Boolean).join(" ")}
+      onMouseEnter={onHover}
+      onMouseLeave={onLeave}
+    >
+      <div className="epc-inner">
+        <div className="epc-glow" aria-hidden="true" />
+
+        {/* Compact header */}
+        <div className="epc-header">
+          <div className="epc-logo-wrap">
+            <img src={card.companylogo} alt={card.company} className="epc-logo" />
           </div>
-
-          {/* BACK — full description */}
-          <div className={isDark ? "flip-card-back flip-card-back--dark" : "flip-card-back"}>
-            <h3 className="flip-back-role">{card.role}</h3>
-            <h4 className="flip-back-company">{card.company}</h4>
-            {card.desc && (
-              <p className="flip-back-desc">{card.desc}</p>
-            )}
-            {card.descBullets && card.descBullets.length > 0 && (
-              <ul className="flip-back-bullets">
-                {card.descBullets.map((b, i) => (
-                  <li key={i}>{b}</li>
-                ))}
-              </ul>
-            )}
+          <div className="epc-meta">
+            <h3 className="epc-role">{card.role}</h3>
+            <h4 className="epc-company">{card.company}</h4>
+            <span className="epc-date">{card.date}</span>
           </div>
+          <div className="epc-chevron" aria-hidden="true">
+            <i className={`fas fa-chevron-${isActive ? "up" : "down"}`} />
+          </div>
+        </div>
 
+        {/* Expandable detail */}
+        <div className="epc-detail">
+          {card.desc && <p className="epc-desc">{card.desc}</p>}
+          {card.descBullets && card.descBullets.length > 0 && (
+            <ul className="epc-bullets">
+              {card.descBullets.map((b, i) => <li key={i}>{b}</li>)}
+            </ul>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
+/* ── Main component ── */
 export default function WorkExperience() {
   const {isDark} = useContext(StyleContext);
+  const [hovered, setHovered] = useState(null);
+
   if (!workExperiences.display) return null;
+
+  const cards   = workExperiences.experience;
+  const cols    = Math.min(cards.length, 4);
 
   return (
     <div id="experience">
-      <div className="experience-container" id="workExperience">
+      <div className="experience-container">
         <h1
           className={isDark ? "dark-mode experience-heading" : "experience-heading"}
           data-reveal="up"
         >
           Experiences
         </h1>
-        <div className="timeline">
-          <div className="timeline-line" />
-          {workExperiences.experience.map((card, i) => (
-            <TimelineCard key={i} card={card} isDark={isDark} index={i} />
+
+        {/* ── Animated track ── */}
+        <div className="epc-track">
+          {/* Shimmer rail line */}
+          <div className="epc-track-rail" aria-hidden="true">
+            <div className="epc-track-rail-glow" />
+          </div>
+
+          {/* Beacon nodes */}
+          <div
+            className="epc-track-nodes"
+            style={{"--exp-cols": cols}}
+          >
+            {cards.map((card, i) => (
+              <TrackNode
+                key={i}
+                card={card}
+                isActive={hovered === i}
+                isDimmed={hovered !== null && hovered !== i}
+                onHover={() => setHovered(i)}
+                onLeave={() => setHovered(null)}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* ── Cards grid ── */}
+        <div
+          className="epc-grid"
+          style={{"--exp-cols": cols}}
+        >
+          {cards.map((card, i) => (
+            <ExpCard
+              key={i}
+              card={card}
+              isDark={isDark}
+              isActive={hovered === i}
+              isDimmed={hovered !== null && hovered !== i}
+              onHover={() => setHovered(i)}
+              onLeave={() => setHovered(null)}
+            />
           ))}
         </div>
       </div>

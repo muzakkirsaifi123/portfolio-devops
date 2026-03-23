@@ -4,7 +4,7 @@ import {useLocalStorage} from "../../hooks/useLocalStorage";
 import useScrollReveal from "../../hooks/useScrollReveal";
 import {StyleProvider} from "../../contexts/StyleContext";
 import DisplayLottie from "../../components/displayLottie/DisplayLottie";
-import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
+import Header from "../../components/header/Header";
 import Skills from "../skills/Skills";
 import StackProgress from "../skillProgress/skillProgress";
 import WorkExperience from "../workExperience/WorkExperience";
@@ -14,7 +14,6 @@ import Education from "../education/Education";
 import Blogs from "../blogs/Blogs";
 import Footer from "../../components/footer/Footer";
 import Contact from "../contact/Contact";
-import {greeting} from "../../portfolio";
 import codingPerson from "../../assets/lottie/codingPerson";
 import buildLottie from "../../assets/lottie/build";
 import landingPerson from "../../assets/lottie/landingPerson";
@@ -83,50 +82,11 @@ export default function SectionPage({section}) {
     return null;
   }
 
-  const goHome = () => {
-    window.history.pushState("", "", window.location.pathname + window.location.search);
-    window.dispatchEvent(new Event("hashchange"));
-  };
-
-  const goSection = sectionId => {
-    window.history.pushState("", "", `${window.location.pathname}${window.location.search}#/${sectionId}`);
-    window.dispatchEvent(new Event("hashchange"));
-  };
-
-  const NAV_ITEMS = [
-    {id: "skills", label: "Skills"},
-    {id: "experience", label: "Experience"},
-    {id: "projects", label: "Projects"},
-    {id: "achievements", label: "Achievements"},
-    {id: "blogs", label: "Blogs"},
-    {id: "contact", label: "Contact"}
-  ];
-
   return (
     <div className={isDark ? "dark-mode section-page" : "section-page"}>
       <StyleProvider value={{isDark, changeTheme: () => setIsDark(!isDark)}}>
-        {/* ── Top bar ── */}
-        <header className={isDark ? "dark-menu sp-topbar" : "sp-topbar"}>
-          <button className="sp-back-btn" onClick={goHome} title="Go Home">
-            <span className="sp-back-bracket">&lt;</span>
-            <span className="sp-back-name">{greeting.username}</span>
-            <span className="sp-back-bracket">/&gt;</span>
-          </button>
-          <nav className="sp-nav">
-            {NAV_ITEMS.map(item => (
-              <button
-                key={item.id}
-                className={`sp-nav-link${section === item.id ? " sp-nav-link--active" : ""}`}
-                onClick={() => goSection(item.id)}
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
-          <div className="sp-toggle">
-            <ToggleSwitch />
-          </div>
-        </header>
+        {/* ── Same header as home page ── */}
+        <Header />
 
         {/* ── Hero ── */}
         <div className={`sp-hero ${visible ? "sp-hero--visible" : ""}`}>

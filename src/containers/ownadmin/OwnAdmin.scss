@@ -335,6 +335,67 @@
   line-height: 1;
 }
 
+/* ── Date range picker ────────────────────────────────────── */
+.oa-date-range {
+  margin-bottom: 16px;
+}
+
+.oa-date-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.oa-date-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.oa-date-sublabel {
+  font-size: 0.72rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.oa-date-input {
+  width: 160px;
+}
+
+.oa-date-sep {
+  font-size: 1.2rem;
+  color: #475569;
+  padding-bottom: 6px;
+}
+
+.oa-date-present {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  padding-bottom: 6px;
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #8c43ce;
+    cursor: pointer;
+  }
+}
+
+.oa-date-preview {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 6px 0 0;
+
+  strong { color: #c084fc; }
+}
+
 /* ── Save toast ───────────────────────────────────────────── */
 .oa-toast {
   position: fixed;

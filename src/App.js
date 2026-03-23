@@ -4,6 +4,7 @@ import Main from "./containers/Main";
 import Admin from "./containers/admin/Admin";
 import OwnAdmin from "./containers/ownadmin/OwnAdmin";
 import SectionPage from "./containers/sectionPage/SectionPage";
+import GlobalParticles from "./components/globalParticles/GlobalParticles";
 
 function getSection(hash) {
   // Match #/skills, #/experience, #/projects, #/achievements, #/education, #/contact
@@ -28,9 +29,12 @@ function App() {
   if (isOwnAdmin) return <OwnAdmin />;
 
   const section = getSection(hash);
-  if (section) return <SectionPage section={section} />;
-
-  return <Main />;
+  return (
+    <>
+      <GlobalParticles />
+      {section ? <SectionPage section={section} /> : <Main />}
+    </>
+  );
 }
 
 export default App;
